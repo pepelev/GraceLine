@@ -4,7 +4,7 @@ using CommandLine.Opt;
 using CommandLine.Opt.Parsed;
 using NUnit.Framework;
 
-namespace CommandLine
+namespace CommandLine.Tests
 {
     public sealed class Arguments_Should
     {

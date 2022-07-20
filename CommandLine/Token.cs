@@ -1,13 +1,25 @@
-﻿namespace CommandLine
+﻿using System;
+using System.Collections.Generic;
+
+namespace CommandLine
 {
     public readonly struct Token
     {
         public Token(string value)
+            : this(value, Array.Empty<Source.Segment>())
         {
-            Value = value;
         }
 
+        public Token(string value, IReadOnlyList<Source.Segment> segments)
+        {
+            Value = value;
+            Segments = segments;
+        }
+
+        public override string ToString() => Value;
+
         public string Value { get; }
+        public IReadOnlyList<Source.Segment> Segments { get; }
 
         public TokenType Type
         {
