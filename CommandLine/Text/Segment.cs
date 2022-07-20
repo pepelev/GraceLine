@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Text;
 
 namespace CommandLine.Text
 {
@@ -28,24 +27,26 @@ namespace CommandLine.Text
                 this.escaping = escaping;
             }
 
-            public override string Value => string.Create(
-                Length,
-                this,
-                static (span, @this) =>
-                {
-                    var content = @this.WholeSegment.Raw;
-                    var j = 0;
-                    for (var i = 0; i < content.Length; i++)
+            public override TokenValue Value => new(
+                string.Create(
+                    Length,
+                    this,
+                    static (span, @this) =>
                     {
-                        var found = @this.escaping.BinarySearch(i) >= 0;
-                        if (found)
+                        var content = @this.WholeSegment.Raw;
+                        var j = 0;
+                        for (var i = 0; i < content.Length; i++)
                         {
-                            continue;
-                        }
+                            var found = @this.escaping.BinarySearch(i) >= 0;
+                            if (found)
+                            {
+                                continue;
+                            }
 
-                        span[j++] = content[i];
+                            span[j++] = content[i];
+                        }
                     }
-                }
+                )
             );
             
 
@@ -80,7 +81,7 @@ namespace CommandLine.Text
             public override Source.Segment WholeSegment { get; }
         }
 
-        IEnumerator<Token> IEnumerable<Token>.GetEnumerator()
+        public IEnumerator<Token> GetEnumerator()
         {
             var segment = new Source.Segment(source);
             while (true)
@@ -171,98 +172,6 @@ namespace CommandLine.Text
             }
 
             return new ThisToken(tail[..offset], escapes);
-        }
-
-        internal IEnumerator<OldToken> GetEnumerator()
-        {
-            var content = source.Content;
-            var temporary = new StringBuilder();
-            var i = 0;
-            int? start = null;
-            while (i < content.Length)
-            {
-                var current = content[i];
-                if (char.IsWhiteSpace(current))
-                {
-                    if (temporary.Length > 0)
-                    {
-                        yield return new OldToken(
-                            temporary.ToString(),
-                            new[]
-                            {
-                                new Source.Segment(source, start.Value, i)
-                            }
-                        );
-                        temporary.Clear();
-                        start = null;
-                    }
-
-                    i++;
-                    continue;
-                }
-
-                if (current == '\'')
-                {
-                    var end = content.IndexOf('\'', startIndex: i + 1) switch
-                    {
-                        -1 => content.Length,
-                        var index => index
-                    };
-                    temporary.Append(content.AsSpan()[(i + 1)..end]);
-                    start ??= i;
-                    i = end + 1;
-                    continue;
-                }
-
-                if (current == '"')
-                {
-                    var end = i + 1;
-                    while (end < content.Length)
-                    {
-                        if (content[end] == '\\')
-                        {
-                            if (end + 1 < content.Length)
-                            {
-                                temporary.Append(content[end + 1]);
-                                end += 2;
-                            }
-                            else
-                            {
-                                temporary.Append('\\');
-                                end++;
-                            }
-                        }
-                        else if (content[end] == '\"')
-                        {
-                            break;
-                        }
-                        else
-                        {
-                            temporary.Append(content[end]);
-                            end++;
-                        }
-                    }
-
-                    start ??= i;
-                    i = end + 1;
-                    continue;
-                }
-
-                temporary.Append(content[i]);
-                start ??= i;
-                i++;
-            }
-
-            if (temporary.Length > 0)
-            {
-                yield return new OldToken(
-                    temporary.ToString(),
-                    new[]
-                    {
-                        new Source.Segment(source, start.Value, content.Length)
-                    }
-                );
-            }
         }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

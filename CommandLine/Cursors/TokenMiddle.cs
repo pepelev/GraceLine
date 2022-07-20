@@ -18,7 +18,7 @@ namespace CommandLine.Cursors
         }
 
         public override int Offset => start.Offset + index;
-        public ReadOnlySpan<char> Content => token.Value.AsSpan(index);
+        public ReadOnlySpan<char> Content => token.Value.Content.AsSpan(index);
         public bool AtTokenStart => index == 1;
         public override Option<TokenStart> MatchWholeToken() => Option.None<TokenStart>();
         public override Option<TokenMiddle> MatchShort() => this.Some();
@@ -36,12 +36,12 @@ namespace CommandLine.Cursors
             }
 
             var newIndex = index + chars;
-            if (newIndex == token.Value.Length)
+            if (newIndex == token.Value.Content.Length)
             {
                 return start.Next.Upcast();
             }
 
-            if (newIndex < token.Value.Length)
+            if (newIndex < token.Value.Content.Length)
             {
                 return new TokenMiddle(token, newIndex, start).Some<Cursor>();
             }

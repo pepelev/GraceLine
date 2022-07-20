@@ -42,7 +42,7 @@ namespace CommandLine.Cursors
         public override Option<TokenStart> MatchWholeToken() => this.Some();
 
         public override Option<TokenMiddle> MatchShort() => CurrentToken
-            .SomeWhen(token => new OldToken(token.Value).Type == TokenType.HyphenPrefixed)
+            .SomeWhen(token => token.Value.Type == TokenType.HyphenPrefixed)
             .Map(token => new TokenMiddle(token, 1, this));
     }
 }

@@ -9,7 +9,7 @@ namespace CommandLine.Opt.Parsed
         public static OptionTerminator Singleton { get; } = new();
 
         public static Option<Option<TokenStart>> Match(Cursor cursor) => cursor.MatchWholeToken()
-            .Filter(token => new OldToken(token.CurrentToken.Value).Type == TokenType.DoubleHyphen)
+            .Filter(token => token.CurrentToken.Value.Type == TokenType.DoubleHyphen)
             .Map(token => token.Next);
 
         public override string ToString() => "--";

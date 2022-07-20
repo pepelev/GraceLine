@@ -21,11 +21,11 @@ namespace CommandLine.Opt
         {
             const int LongOptionPrefix = 2;
             return cursor.MatchWholeToken()
-                .Filter(token => new OldToken(token.CurrentToken.Value).Type == TokenType.DoubleHyphenPrefixed)
+                .Filter(token => token.CurrentToken.Value.Type == TokenType.DoubleHyphenPrefixed)
                 .FlatMap(
                     token =>
                     {
-                        var value = token.CurrentToken.Value;
+                        var value = token.CurrentToken.Value.Content;
                         if (key.AsSpan().SequenceEqual(value.AsSpan(LongOptionPrefix)))
                         {
                             return new Cursor.Item<ParsedArgument>(

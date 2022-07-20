@@ -37,17 +37,17 @@ namespace CommandLine
                     var restArguments = new OptionSequence<TokenStart>(tail.ValueOrFailure(), token => token.Next);
                     foreach (var argument in restArguments)
                     {
-                        yield return new ParsedNonOptionArgument(argument.CurrentToken.Value);
+                        yield return new ParsedNonOptionArgument(argument.CurrentToken.Value.Content);
                     }
 
                     yield break;
                 }
 
                 var nonOption = cursorValue.MatchWholeToken().Filter(
-                    token => new OldToken(token.CurrentToken.Value). Type is TokenType.Hyphen or TokenType.Plain
+                    token => token.CurrentToken.Value.Type is TokenType.Hyphen or TokenType.Plain
                 ).Map(
                     token => new Cursor.Item<ParsedArgument>(
-                        new ParsedNonOptionArgument(token.CurrentToken.Value),
+                        new ParsedNonOptionArgument(token.CurrentToken.Value.Content),
                         token.Next.Upcast()
                     )
                 );

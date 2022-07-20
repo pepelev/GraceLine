@@ -18,7 +18,7 @@ namespace CommandLine.Cursors
         ).Else(
             () => MatchWholeToken().Map(
                 token => new Item<UnrecognizedOption>(
-                    new UnrecognizedOption(token.CurrentToken.Value),
+                    new UnrecognizedOption(token.CurrentToken.Value.Content),
                     token.Next.Upcast()
                 )
             )

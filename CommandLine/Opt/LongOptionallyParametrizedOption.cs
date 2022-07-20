@@ -19,12 +19,12 @@ namespace CommandLine.Opt
         {
             const int LongOptionPrefix = 2;
             return cursor.MatchWholeToken()
-                .Filter(token => new OldToken(token.CurrentToken.Value).Type == TokenType.DoubleHyphenPrefixed)
+                .Filter(token => token.CurrentToken.Value.Type == TokenType.DoubleHyphenPrefixed)
                 .FlatMap(
                     token =>
                     {
                         var keySpan = key.AsSpan();
-                        var argumentSpan = token.CurrentToken.Value.AsSpan(LongOptionPrefix);
+                        var argumentSpan = token.CurrentToken.Value.Content.AsSpan(LongOptionPrefix);
                         var delimiterIndex = argumentSpan.IndexOf('=');
                         if (delimiterIndex < 0)
                         {

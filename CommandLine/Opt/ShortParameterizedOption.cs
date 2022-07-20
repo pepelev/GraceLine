@@ -40,7 +40,7 @@ namespace CommandLine.Opt
                             some: token => new Cursor.Item<ParsedArgument>(
                                 new ParsedParametrizedOption(
                                     this,
-                                    token.CurrentToken.Value
+                                    token.CurrentToken.Value.Content
                                 ),
                                 token.Next.Upcast()
                             )
