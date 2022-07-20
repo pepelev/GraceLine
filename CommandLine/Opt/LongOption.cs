@@ -31,7 +31,7 @@ namespace CommandLine.Opt
                                     this,
                                     LongOptionMatch.Full
                                 ),
-                                token.Next
+                                token.Next.Upcast()
                             ).Some();
                         }
 
@@ -43,7 +43,7 @@ namespace CommandLine.Opt
                                     this,
                                     LongOptionMatch.Prefix
                                 ),
-                                token.Next
+                                token.Next.Upcast()
                             ).Some();
                         }
 

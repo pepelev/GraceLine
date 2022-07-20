@@ -35,7 +35,7 @@ namespace CommandLine
             var newIndex = index + chars;
             if (newIndex == token.Length)
             {
-                return start.Next;
+                return start.Next.Upcast();
             }
 
             if (newIndex < token.Length)
@@ -48,9 +48,5 @@ namespace CommandLine
 
         public ReadOnlySpan<char> Content => token.Value.AsSpan(index);
         public bool AtTokenStart => index == 1;
-
-        public override Option<Cursor> Next => index == token.Length - 1
-            ? start.Next
-            : new TokenMiddle(token, index + 1, start).Some<Cursor>();
     }
 }

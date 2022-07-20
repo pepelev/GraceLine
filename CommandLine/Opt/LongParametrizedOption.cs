@@ -28,7 +28,7 @@ namespace CommandLine.Opt
                         {
                             if (keySpan.StartsWith(argumentSpan))
                             {
-                                return token.NextA.Match(
+                                return token.Next.Match(
                                     none: () => new Cursor.Item<ParsedArgument>(
                                         new MissingParameter(this),
                                         Optional.Option.None<Cursor>()
@@ -38,7 +38,7 @@ namespace CommandLine.Opt
                                         var parameter = parameterToken.CurrentToken.Value;
                                         return new Cursor.Item<ParsedArgument>(
                                             new ParsedParametrizedOption(this, parameter),
-                                            parameterToken.Next
+                                            parameterToken.Next.Upcast()
                                         );
                                     }
                                 ).Some();
@@ -54,7 +54,7 @@ namespace CommandLine.Opt
                                     this,
                                     new string(argumentSpan[(delimiterIndex + 1)..])
                                 ),
-                                token.Next
+                                token.Next.Upcast()
                             ).Some();
                         }
 

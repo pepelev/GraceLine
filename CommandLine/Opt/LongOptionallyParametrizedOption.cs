@@ -28,7 +28,7 @@ namespace CommandLine.Opt
                         {
                             return new Cursor.Item<ParsedArgument>(
                                 new ParsedParametrizedOption(this, null),
-                                token.Next
+                                token.Next.Upcast()
                             ).Some();
                         }
 
@@ -42,7 +42,7 @@ namespace CommandLine.Opt
                             var value = argumentSpan[(delimiterIndex + 1)..];
                             return new Cursor.Item<ParsedArgument>(
                                 new ParsedParametrizedOption(this, new string(value)),
-                                token.Next
+                                token.Next.Upcast()
                             ).Some();
                         }
 

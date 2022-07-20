@@ -34,11 +34,7 @@ namespace CommandLine
             .SomeWhen(token => token.Type == TokenType.HyphenPrefixed)
             .Map(token => new TokenMiddle(token, 1, this));
 
-        public override Option<Cursor> Next => tokens.Dequeue() is { IsEmpty: false } rest
-            ? new TokenStart(rest, Offset + CurrentToken.Length).Some<Cursor>()
-            : Option.None<Cursor>();
-
-        public Option<TokenStart> NextA => tokens.Dequeue() is { IsEmpty: false } rest
+        public Option<TokenStart> Next => tokens.Dequeue() is { IsEmpty: false } rest
             ? new TokenStart(rest, Offset + CurrentToken.Length).Some()
             : Option.None<TokenStart>();
 

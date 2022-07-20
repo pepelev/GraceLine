@@ -31,7 +31,7 @@ namespace CommandLine
                 {
                     yield return OptionTerminator.Singleton;
 
-                    var restArguments = new OptionSequence<TokenStart>(tail.ValueOrFailure(), token => token.NextA);
+                    var restArguments = new OptionSequence<TokenStart>(tail.ValueOrFailure(), token => token.Next);
                     foreach (var argument in restArguments)
                     {
                         yield return new ParsedNonOptionArgument(argument.CurrentToken.Value);
@@ -45,7 +45,7 @@ namespace CommandLine
                 ).Map(
                     token => new Cursor.Item<ParsedArgument>(
                         new ParsedNonOptionArgument(token.CurrentToken.Value),
-                        token.Next
+                        token.Next.Upcast()
                     )
                 );
 

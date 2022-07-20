@@ -17,14 +17,12 @@ namespace CommandLine
             () => MatchWholeToken().Map(
                 token => new Item<UnrecognizedOption>(
                     new UnrecognizedOption(token.CurrentToken.Value),
-                    token.Next
+                    token.Next.Upcast()
                 )
             )
         ).ValueOrFailure();
 
         public abstract int Offset { get; }
-        public abstract Optional.Option<Cursor> Next { get; }
-
 
         public readonly struct Item<T>
         {

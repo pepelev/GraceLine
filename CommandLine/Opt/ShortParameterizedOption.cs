@@ -41,7 +41,7 @@ namespace CommandLine.Opt
                                     this,
                                     token.CurrentToken.Value
                                 ),
-                                token.Next
+                                token.Next.Upcast()
                             )
                         );
                     }
