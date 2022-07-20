@@ -78,11 +78,11 @@ namespace CommandLine.Tests
 
         private static IEnumerable<string> Values(IEnumerable<Token2> tokens) => tokens.Select(token => token.Value);
 
-        private static IEnumerable<(string Value, int From, int To)> Tuples(IEnumerable<Token> tokens) =>
+        private static IEnumerable<(string Value, int From, int To)> Tuples(IEnumerable<Token2> tokens) =>
             tokens.Select(
                 token =>
                 {
-                    var segment = token.Segments.Single();
+                    var segment = token.WholeSegment;
                     return (token.Value, segment.FromInclusive, segment.ToExclusive);
                 }
             );

@@ -10,7 +10,7 @@ namespace CommandLine.Text
         public abstract Source.Segment WholeSegment { get; }
     }
 
-    public readonly struct Token
+    internal readonly struct Token
     {
         public Token(string value)
             : this(value, Array.Empty<Source.Segment>())

@@ -7,7 +7,7 @@ using System.Text;
 namespace CommandLine.Text
 {
     // https://www.gnu.org/software/bash/manual/html_node/Quoting.html
-    public sealed class ShellTokens : IEnumerable<Token>, IEnumerable<Token2>
+    public sealed class ShellTokens : IEnumerable<Token2>
     {
         private readonly Source source;
 
@@ -173,7 +173,7 @@ namespace CommandLine.Text
             return new ThisToken(tail[..offset], escapes);
         }
 
-        public IEnumerator<Token> GetEnumerator()
+        internal IEnumerator<Token> GetEnumerator()
         {
             var content = source.Content;
             var temporary = new StringBuilder();

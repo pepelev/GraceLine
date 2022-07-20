@@ -8,13 +8,17 @@ namespace CommandLine.Cursors
 {
     public sealed class TokenStart : Cursor
     {
-        private readonly ImmutableQueue<Token> tokens;
+        private readonly ImmutableQueue<Token2> tokens;
 
         public TokenStart(IEnumerable<string> tokens)
             : this(
-                ImmutableQueue.CreateRange(
+                ImmutableQueue.CreateRange<Token2>(
                     tokens.Select(
-                        token => new Token(token)
+                        token => new VerbatimToken(
+                            new Source.Segment(
+                                new WholeInput(token)
+                            )
+                        )
                     )
                 ),
                 0
@@ -22,7 +26,7 @@ namespace CommandLine.Cursors
         {
         }
 
-        private TokenStart(ImmutableQueue<Token> tokens, int offset)
+        private TokenStart(ImmutableQueue<Token2> tokens, int offset)
         {
             this.tokens = tokens;
             Offset = offset;
@@ -31,14 +35,14 @@ namespace CommandLine.Cursors
         public override int Offset { get; }
 
         public Option<TokenStart> Next => tokens.Dequeue() is { IsEmpty: false } rest
-            ? new TokenStart(rest, Offset + CurrentToken.Length).Some()
+            ? new TokenStart(rest, Offset + CurrentToken.WholeSegment.Length).Some()
             : Option.None<TokenStart>();
 
-        public Token CurrentToken => tokens.Peek();
+        public Token2 CurrentToken => tokens.Peek();
         public override Option<TokenStart> MatchWholeToken() => this.Some();
 
         public override Option<TokenMiddle> MatchShort() => CurrentToken
-            .SomeWhen(token => token.Type == TokenType.HyphenPrefixed)
+            .SomeWhen(token => new Token(token.Value).Type == TokenType.HyphenPrefixed)
             .Map(token => new TokenMiddle(token, 1, this));
     }
 }

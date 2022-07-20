@@ -6,11 +6,11 @@ namespace CommandLine.Cursors
 {
     public sealed class TokenMiddle : Cursor
     {
-        private readonly Token token;
+        private readonly Token2 token;
         private readonly int index;
         private readonly TokenStart start;
 
-        public TokenMiddle(Token token, int index, TokenStart start)
+        public TokenMiddle(Token2 token, int index, TokenStart start)
         {
             this.token = token;
             this.index = index;
@@ -36,12 +36,12 @@ namespace CommandLine.Cursors
             }
 
             var newIndex = index + chars;
-            if (newIndex == token.Length)
+            if (newIndex == token.Value.Length)
             {
                 return start.Next.Upcast();
             }
 
-            if (newIndex < token.Length)
+            if (newIndex < token.Value.Length)
             {
                 return new TokenMiddle(token, newIndex, start).Some<Cursor>();
             }

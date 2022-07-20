@@ -44,7 +44,7 @@ namespace CommandLine
                 }
 
                 var nonOption = cursorValue.MatchWholeToken().Filter(
-                    token => token.CurrentToken.Type is TokenType.Hyphen or TokenType.Plain
+                    token => new Token(token.CurrentToken.Value). Type is TokenType.Hyphen or TokenType.Plain
                 ).Map(
                     token => new Cursor.Item<ParsedArgument>(
                         new ParsedNonOptionArgument(token.CurrentToken.Value),
