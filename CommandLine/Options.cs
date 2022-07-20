@@ -9,11 +9,11 @@ using Optional.Unsafe;
 
 namespace CommandLine
 {
-    public sealed class Options2
+    public sealed class Options
     {
         private readonly Opt.Option[] options;
 
-        public Options2(params Opt.Option[] options)
+        public Options(params Opt.Option[] options)
         {
             this.options = options;
         }
