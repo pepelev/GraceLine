@@ -17,25 +17,8 @@ namespace CommandLine
         private readonly TokenStart start;
 
         public override int Offset => start.Offset + index;
-        public override Token CurrentToken => start.CurrentToken;
         public override Option<TokenStart> MatchWholeToken() => Option.None<TokenStart>();
         public override Option<TokenMiddle> MatchShort() => this.Some();
-        public override Option<Item<Token>> MatchEntireToken() => Option.None<Item<Token>>();
-
-        public override Option<ShortOption2> MatchShortOption() => new ShortOption2(
-            new Item<char>(
-                token.Value[index],
-                Next
-            ),
-            new Item<TokenTail>(
-                new TokenTail(token.Value[(index + 1)..]),
-                start.Next
-            ),
-            new Item<TokenTail>(
-                new TokenTail(token.Value[index..]),
-                Next
-            )
-        ).Some();
 
         public Option<Cursor> Skip(int chars)
         {
@@ -69,8 +52,5 @@ namespace CommandLine
         public override Option<Cursor> Next => index == token.Length - 1
             ? start.Next
             : new TokenMiddle(token, index + 1, start).Some<Cursor>();
-
-        // todo skip
-        // С одной стороны хочется унести знание о структуре в конкретные опции, но здесь нужно знать что пропускать короткую опцию или целый токен
     }
 }

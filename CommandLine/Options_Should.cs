@@ -289,6 +289,16 @@ namespace CommandLine
             var beep = new LongOptionallyParametrizedOption("beep");
             var options = new Options(beep);
 
+            var arguments = options.Parse("--beep");
+            Assert(arguments, (beep, "NO_PARAMETER"));
+        }
+
+        [Test]
+        public void Parse_Long_Option_Without_Optional_Parameter2()
+        {
+            var beep = new LongOptionallyParametrizedOption("beep");
+            var options = new Options(beep);
+
             var arguments = options.Parse("--beep", "argument");
             Assert(arguments, (beep, "NO_PARAMETER"), "argument");
         }

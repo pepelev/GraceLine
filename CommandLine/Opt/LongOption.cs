@@ -19,7 +19,7 @@ namespace CommandLine.Opt
         {
             const int LongOptionPrefix = 2;
             return cursor.MatchWholeToken()
-                .Filter(cursor.CurrentToken.Type == TokenType.DoubleHyphenPrefixed)
+                .Filter(token => token.CurrentToken.Type == TokenType.DoubleHyphenPrefixed)
                 .FlatMap(
                     token =>
                     {

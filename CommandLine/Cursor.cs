@@ -6,16 +6,23 @@ namespace CommandLine
 {
     public abstract class Cursor
     {
-        public Item<UnrecognizedOption> Skip() => MatchShortOption().Map(
-            option => option.Key.Map(key => new UnrecognizedOption(key.ToString()))
-        ).ValueOr(
-            () => MatchEntireToken().Map(
-                item => item.Map(token => new UnrecognizedOption(token.Value))
-            ).ValueOrFailure()
-        );
+        public Item<UnrecognizedOption> Skip() => MatchShort().Map(
+            option => new Item<UnrecognizedOption>(
+                new UnrecognizedOption(
+                    option.Content[0].ToString()
+                ),
+                option.Skip(1)
+            )
+        ).Else(
+            () => MatchWholeToken().Map(
+                token => new Item<UnrecognizedOption>(
+                    new UnrecognizedOption(token.CurrentToken.Value),
+                    token.Next
+                )
+            )
+        ).ValueOrFailure();
 
         public abstract int Offset { get; }
-        public abstract Token CurrentToken { get; }
         public abstract Optional.Option<Cursor> Next { get; }
 
 
@@ -34,8 +41,5 @@ namespace CommandLine
 
         public abstract Optional.Option<TokenStart> MatchWholeToken();
         public abstract Optional.Option<TokenMiddle> MatchShort();
-
-        public abstract Optional.Option<Item<Token>> MatchEntireToken();
-        public abstract Optional.Option<ShortOption2> MatchShortOption();
     }
 }

@@ -34,20 +34,14 @@ namespace CommandLine
             .SomeWhen(token => token.Type == TokenType.HyphenPrefixed)
             .Map(token => new TokenMiddle(token, 1, this));
 
-        public override Option<Item<Token>> MatchEntireToken() => new Item<Token>(tokens.Peek(), Next).Some();
-
-        public override Option<ShortOption2> MatchShortOption() => CurrentToken.Some()
-            .Filter(token => token.Type == TokenType.HyphenPrefixed)
-            .FlatMap(token => new TokenMiddle(token, 1, this).MatchShortOption());
-
         public override Option<Cursor> Next => tokens.Dequeue() is { IsEmpty: false } rest
             ? new TokenStart(rest, Offset + CurrentToken.Length).Some<Cursor>()
             : Option.None<Cursor>();
 
         public Option<TokenStart> NextA => tokens.Dequeue() is { IsEmpty: false } rest
-            ? new TokenStart(rest, Offset + CurrentToken.Length).Some<TokenStart>()
+            ? new TokenStart(rest, Offset + CurrentToken.Length).Some()
             : Option.None<TokenStart>();
 
-        public override Token CurrentToken => tokens.Peek();
+        public Token CurrentToken => tokens.Peek();
     }
 }
