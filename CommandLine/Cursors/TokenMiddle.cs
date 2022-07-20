@@ -5,9 +5,9 @@ namespace CommandLine.Cursors
 {
     public sealed class TokenMiddle : Cursor
     {
+        private readonly Token token;
         private readonly int index;
         private readonly TokenStart start;
-        private readonly Token token;
 
         public TokenMiddle(Token token, int index, TokenStart start)
         {

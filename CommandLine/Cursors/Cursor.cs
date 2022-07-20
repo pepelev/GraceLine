@@ -1,5 +1,4 @@
-﻿using System;
-using CommandLine.Opt.Parsed;
+﻿using CommandLine.Opt.Parsed;
 using Optional;
 using Optional.Unsafe;
 
@@ -38,7 +37,6 @@ namespace CommandLine.Cursors
 
             public T Value { get; }
             public Option<Cursor> Next { get; }
-            public Item<K> Map<K>(Func<T, K> map) => new(map(Value), Next);
         }
     }
 }
