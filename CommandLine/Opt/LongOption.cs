@@ -4,7 +4,7 @@ using Optional;
 
 namespace CommandLine.Opt
 {
-    public sealed class LongOption : Option2
+    public sealed class LongOption : Option
     {
         private readonly string key;
 
@@ -15,7 +15,7 @@ namespace CommandLine.Opt
 
         public override string ToString() => $"--{key}";
 
-        public override Optional.Option<Cursor.Item<ParsedArgument>> Match(Cursor cursor)
+        public override Option<Cursor.Item<ParsedArgument>> Match(Cursor cursor)
         {
             const int LongOptionPrefix = 2;
             return cursor.MatchWholeToken()
@@ -47,7 +47,7 @@ namespace CommandLine.Opt
                             ).Some();
                         }
 
-                        return Option.None<Cursor.Item<ParsedArgument>>();
+                        return Optional.Option.None<Cursor.Item<ParsedArgument>>();
                     }
                 );
         }

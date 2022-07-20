@@ -2,7 +2,7 @@
 
 namespace CommandLine.Opt
 {
-    public sealed class ShortOption : Option2
+    public sealed class ShortOption : Option
     {
         private readonly char key;
 

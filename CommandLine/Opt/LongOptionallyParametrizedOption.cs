@@ -4,7 +4,7 @@ using Optional;
 
 namespace CommandLine.Opt
 {
-    public sealed class LongOptionallyParametrizedOption : Option2
+    public sealed class LongOptionallyParametrizedOption : Option
     {
         public LongOptionallyParametrizedOption(string key)
         {
@@ -13,7 +13,7 @@ namespace CommandLine.Opt
 
         private readonly string key;
 
-        public override Optional.Option<Cursor.Item<ParsedArgument>> Match(Cursor cursor)
+        public override Option<Cursor.Item<ParsedArgument>> Match(Cursor cursor)
         {
             const int LongOptionPrefix = 2;
             return cursor.MatchWholeToken()
@@ -34,7 +34,7 @@ namespace CommandLine.Opt
 
                         if (delimiterIndex == 0)
                         {
-                            return Option.None<Cursor.Item<ParsedArgument>>();
+                            return Optional.Option.None<Cursor.Item<ParsedArgument>>();
                         }
 
                         if (keySpan.StartsWith(argumentSpan[..delimiterIndex]))
@@ -46,7 +46,7 @@ namespace CommandLine.Opt
                             ).Some();
                         }
 
-                        return Option.None<Cursor.Item<ParsedArgument>>();
+                        return Optional.Option.None<Cursor.Item<ParsedArgument>>();
                     }
                 );
         }

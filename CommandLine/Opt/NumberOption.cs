@@ -4,11 +4,11 @@ using Optional;
 
 namespace CommandLine.Opt
 {
-    public sealed class NumberOption : Option2
+    public sealed class NumberOption : Option
     {
         public static NumberOption Singleton { get; } = new();
 
-        public override Optional.Option<Cursor.Item<ParsedArgument>> Match(Cursor cursor)
+        public override Option<Cursor.Item<ParsedArgument>> Match(Cursor cursor)
         {
             // todo inspect char.IsDigit();
             static bool IsDigit(char @char) => '0' <= @char && @char <= '9';
@@ -31,7 +31,7 @@ namespace CommandLine.Opt
                             ).Some();
                         }
 
-                        return Option.None<Cursor.Item<ParsedArgument>>();
+                        return Optional.Option.None<Cursor.Item<ParsedArgument>>();
                     }
                 );
         }

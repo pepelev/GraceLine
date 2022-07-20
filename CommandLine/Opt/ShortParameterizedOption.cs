@@ -3,7 +3,7 @@ using Optional;
 
 namespace CommandLine.Opt
 {
-    public sealed class ShortParameterizedOption : Option2
+    public sealed class ShortParameterizedOption : Option
     {
         private readonly char key;
 
@@ -12,7 +12,7 @@ namespace CommandLine.Opt
             this.key = key;
         }
 
-        public override Optional.Option<Cursor.Item<ParsedArgument>> Match(Cursor cursor)
+        public override Option<Cursor.Item<ParsedArgument>> Match(Cursor cursor)
         {
             return cursor.MatchShort()
                 .Filter(option => option.Content[0] == key)
@@ -34,7 +34,7 @@ namespace CommandLine.Opt
                         ).Match(
                             none: () => new Cursor.Item<ParsedArgument>(
                                 new MissingParameter(this),
-                                Option.None<Cursor>()
+                                Optional.Option.None<Cursor>()
                             ),
                             some: token => new Cursor.Item<ParsedArgument>(
                                 new ParsedParametrizedOption(

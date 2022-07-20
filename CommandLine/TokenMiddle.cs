@@ -18,11 +18,11 @@ namespace CommandLine
 
         public override int Offset => start.Offset + index;
         public override Token CurrentToken => start.CurrentToken;
-        public override Optional.Option<TokenStart> MatchWholeToken() => Option.None<TokenStart>();
-        public override Optional.Option<TokenMiddle> MatchShort() => this.Some();
-        public override Optional.Option<Item<Token>> MatchEntireToken() => Option.None<Item<Token>>();
+        public override Option<TokenStart> MatchWholeToken() => Option.None<TokenStart>();
+        public override Option<TokenMiddle> MatchShort() => this.Some();
+        public override Option<Item<Token>> MatchEntireToken() => Option.None<Item<Token>>();
 
-        public override Optional.Option<ShortOption2> MatchShortOption() => new ShortOption2(
+        public override Option<ShortOption2> MatchShortOption() => new ShortOption2(
             new Item<char>(
                 token.Value[index],
                 Next
@@ -37,7 +37,7 @@ namespace CommandLine
             )
         ).Some();
 
-        public Optional.Option<Cursor> Skip(int chars)
+        public Option<Cursor> Skip(int chars)
         {
             if (chars == 0)
             {
@@ -66,7 +66,7 @@ namespace CommandLine
         public ReadOnlySpan<char> Content => token.Value.AsSpan(index);
         public bool AtTokenStart => index == 1;
 
-        public override Optional.Option<Cursor> Next => index == token.Length - 1
+        public override Option<Cursor> Next => index == token.Length - 1
             ? start.Next
             : new TokenMiddle(token, index + 1, start).Some<Cursor>();
 
