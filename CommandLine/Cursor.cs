@@ -38,13 +38,4 @@ namespace CommandLine
         public abstract Optional.Option<Item<Token>> MatchEntireToken();
         public abstract Optional.Option<ShortOption2> MatchShortOption();
     }
-
-    //internal sealed class End : Cursor
-    //{
-    //    public static End Singleton { get; } = new();
-    //    public override bool AtEnd => true;
-    //    public override int Offset => int.MaxValue;
-    //    public override Optional.Option<Item<Token>> MatchEntireToken() => Option.None<Item<Token>>();
-    //    public override Optional.Option<ShortOption> MatchShortOption() => Option.None<ShortOption>();
-    //}
 }
