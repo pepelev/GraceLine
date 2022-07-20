@@ -1,9 +1,9 @@
-﻿using CommandLine.Inputs;
-using CommandLine.Opt.Parsed;
+﻿using CommandLine.Opt.Parsed;
+using Optional;
 
 namespace CommandLine.Opt
 {
-    public sealed class ShortParameterizedOption : Option<ParsedArgument>
+    public sealed class ShortParameterizedOption : Option2
     {
         private readonly char key;
 
@@ -12,9 +12,40 @@ namespace CommandLine.Opt
             this.key = key;
         }
 
-        public override Optional.Option<(ParsedArgument Result, Input Tail)> Match(Input input) =>
-            input.ParseParametrizedShortOption(key).Map(
-                pair => (new ParsedParametrizedOption(this, pair.Parameter) as ParsedArgument, pair.Tail)
-            );
+        public override Optional.Option<Cursor.Item<ParsedArgument>> Match(Cursor cursor)
+        {
+            return cursor.MatchShort()
+                .Filter(option => option.Content[0] == key)
+                .Map(option =>
+                    {
+                        if (option.Content.Length > 1)
+                        {
+                            return new Cursor.Item<ParsedArgument>(
+                                new ParsedParametrizedOption(
+                                    this,
+                                    new string(option.Content[1..])
+                                ),
+                                option.Skip(option.Content.Length) // todo skip all token
+                            );
+                        }
+
+                        return option.Skip(1).FlatMap(
+                            token => token.MatchWholeToken()
+                        ).Match(
+                            none: () => new Cursor.Item<ParsedArgument>(
+                                new MissingParameter(this),
+                                Option.None<Cursor>()
+                            ),
+                            some: token => new Cursor.Item<ParsedArgument>(
+                                new ParsedParametrizedOption(
+                                    this,
+                                    token.CurrentToken.Value
+                                ),
+                                token.Next
+                            )
+                        );
+                    }
+                );
+        }
     }
 }

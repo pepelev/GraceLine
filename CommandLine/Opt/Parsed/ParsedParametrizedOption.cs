@@ -2,14 +2,14 @@
 {
     public sealed class ParsedParametrizedOption : ParsedArgument
     {
-        public ParsedParametrizedOption(Option<ParsedArgument> option, string parameter)
+        public ParsedParametrizedOption(Option2 option, string parameter)
         {
             Option = option;
             Parameter = parameter;
         }
 
         public override T Accept<T>(Visitor<T> visitor) => visitor.Visit(this);
-        public Option<ParsedArgument> Option { get; }
+        public Option2 Option { get; }
         public string Parameter { get; }
     }
 }

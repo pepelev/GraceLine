@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using CommandLine.Inputs;
 using CommandLine.Opt;
 using CommandLine.Opt.Parsed;
 using Optional;
@@ -13,7 +13,14 @@ namespace CommandLine
 {
     public abstract class Cursor
     {
-        public abstract bool AtEnd { get; }
+        public Item<UnrecognizedOption> Skip() => MatchShortOption().Map(
+            option => option.Key.Map(key => new UnrecognizedOption(key.ToString()))
+        ).ValueOr(
+            () => MatchEntireToken().Map(
+                item => item.Map(token => new UnrecognizedOption(token.Value))
+            ).ValueOrFailure()
+        );
+
         public abstract int Offset { get; }
         public abstract Token CurrentToken { get; }
         public abstract Optional.Option<Cursor> Next { get; }
@@ -29,13 +36,17 @@ namespace CommandLine
 
             public T Value { get; }
             public Optional.Option<Cursor> Next { get; }
+            public Item<K> Map<K>(Func<T, K> map) => new(map(Value), Next);
         }
+
+        public abstract Optional.Option<TokenStart> MatchWholeToken();
+        public abstract Optional.Option<TokenMiddle> MatchShort();
 
         public abstract Optional.Option<Item<Token>> MatchEntireToken();
         public abstract Optional.Option<ShortOption2> MatchShortOption();
     }
 
-    internal sealed class TokenStart : Cursor
+    public sealed class TokenStart : Cursor
     {
         private readonly ImmutableQueue<Token> tokens;
 
@@ -57,20 +68,31 @@ namespace CommandLine
             Offset = offset;
         }
 
-        public override bool AtEnd => false;
         public override int Offset { get; }
+        public override Optional.Option<TokenStart> MatchWholeToken() => this.Some();
+
+        public override Optional.Option<TokenMiddle> MatchShort() => CurrentToken
+            .SomeWhen(token => token.Type == TokenType.HyphenPrefixed)
+            .Map(token => new TokenMiddle(token, 1, this));
 
         public override Optional.Option<Item<Token>> MatchEntireToken() => new Item<Token>(tokens.Peek(), Next).Some();
-        public override Optional.Option<ShortOption2> MatchShortOption() => Option.None<ShortOption2>();
+
+        public override Optional.Option<ShortOption2> MatchShortOption() => CurrentToken.Some()
+            .Filter(token => token.Type == TokenType.HyphenPrefixed)
+            .FlatMap(token => new TokenMiddle(token, 1, this).MatchShortOption());
 
         public override Optional.Option<Cursor> Next => tokens.Dequeue() is { IsEmpty: false } rest
             ? new TokenStart(rest, Offset + CurrentToken.Length).Some<Cursor>()
             : Option.None<Cursor>();
 
+        public Optional.Option<TokenStart> NextA => tokens.Dequeue() is { IsEmpty: false } rest
+            ? new TokenStart(rest, Offset + CurrentToken.Length).Some<TokenStart>()
+            : Option.None<TokenStart>();
+
         public override Token CurrentToken => tokens.Peek();
     }
 
-    internal sealed class TokenMiddle : Cursor
+    public sealed class TokenMiddle : Cursor
     {
         public TokenMiddle(Token token, int index, TokenStart start)
         {
@@ -83,9 +105,10 @@ namespace CommandLine
         private readonly int index;
         private readonly TokenStart start;
 
-        public override bool AtEnd => false;
         public override int Offset => start.Offset + index;
         public override Token CurrentToken => start.CurrentToken;
+        public override Optional.Option<TokenStart> MatchWholeToken() => Option.None<TokenStart>();
+        public override Optional.Option<TokenMiddle> MatchShort() => this.Some();
         public override Optional.Option<Item<Token>> MatchEntireToken() => Option.None<Item<Token>>();
 
         public override Optional.Option<ShortOption2> MatchShortOption() => new ShortOption2(
@@ -96,8 +119,41 @@ namespace CommandLine
             new Item<TokenTail>(
                 new TokenTail(token.Value[(index + 1)..]),
                 start.Next
+            ),
+            new Item<TokenTail>(
+                new TokenTail(token.Value[index..]),
+                Next
             )
         ).Some();
+
+        public Optional.Option<Cursor> Skip(int chars)
+        {
+            if (chars == 0)
+            {
+                return this.Some<Cursor>();
+            }
+
+            if (chars < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(chars), "must not be negative");
+            }
+
+            var newIndex = index + chars;
+            if (newIndex == token.Length)
+            {
+                return start.Next;
+            }
+
+            if (newIndex < token.Length)
+            {
+                return new TokenMiddle(token, newIndex, start).Some<Cursor>();
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(chars), "must not exceed chars left in current token");
+        }
+
+        public ReadOnlySpan<char> Content => token.Value.AsSpan(index);
+        public bool AtTokenStart => index == 1;
 
         public override Optional.Option<Cursor> Next => index == token.Length - 1
             ? start.Next
@@ -158,14 +214,16 @@ namespace CommandLine
 
     public readonly struct ShortOption2
     {
-        public ShortOption2(Cursor.Item<char> key, Cursor.Item<TokenTail> rest)
+        public ShortOption2(Cursor.Item<char> key, Cursor.Item<TokenTail> tail, Cursor.Item<TokenTail> whole)
         {
             Key = key;
-            Rest = rest;
+            Tail = tail;
+            Whole = whole;
         }
 
         public Cursor.Item<char> Key { get; }
-        public Cursor.Item<TokenTail> Rest { get; }
+        public Cursor.Item<TokenTail> Tail { get; }
+        public Cursor.Item<TokenTail> Whole { get; }
     }
 
     public readonly struct TokenTail
@@ -176,6 +234,32 @@ namespace CommandLine
         }
 
         public string Value { get; }
+    }
+
+    internal sealed class OptionSequence<T> : IEnumerable<T>
+    {
+        private readonly Optional.Option<T> start;
+        private readonly Func<T, Optional.Option<T>> next;
+
+        public OptionSequence(Optional.Option<T> start, Func<T, Optional.Option<T>> next)
+        {
+            this.start = start;
+            this.next = next;
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            var current = start;
+            while (current.HasValue)
+            {
+                var value = current.ValueOrFailure();
+                yield return value;
+
+                current = next(value);
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 
     public sealed class Options2
@@ -189,154 +273,115 @@ namespace CommandLine
 
         public IEnumerable<ParsedArgument> Parse(params string[] arguments)
         {
-            var input = new TokenStart(arguments).Some<Cursor>();
-            while (input.HasValue)
+            var cursor = arguments.Length == 0
+                ? Option.None<Cursor>()
+                : new TokenStart(arguments).Some<Cursor>();
+
+            while (cursor.HasValue)
             {
-                var inputValue = input.ValueOrFailure();
-                var currentToken = inputValue.CurrentToken;
-                if (currentToken.Type == TokenType.DoubleHyphen)
+                var cursorValue = cursor.ValueOrFailure();
+                if (OptionTerminator.Match(cursorValue) is { HasValue: true } tail)
                 {
                     yield return OptionTerminator.Singleton;
-                    input = inputValue.Next;
+
+                    var restArguments = new OptionSequence<TokenStart>(tail.ValueOrFailure(), token => token.NextA);
+                    foreach (var argument in restArguments)
+                    {
+                        yield return new ParsedNonOptionArgument(argument.CurrentToken.Value);
+                    }
+
+                    yield break;
                 }
-                else if (currentToken.Type is TokenType.Hyphen or TokenType.Plain)
+
+                var currentToken = cursorValue.CurrentToken;
+                if (currentToken.Type is TokenType.Hyphen or TokenType.Plain)
                 {
                     yield return new ParsedNonOptionArgument(currentToken.Value);
-                    input = inputValue.Next;
+                    cursor = cursorValue.Next;
                 }
-                else if (currentToken.Type == TokenType.DoubleHyphenPrefixed)
+                else
                 {
                     var items = options
-                        .Select(option => option.Match(inputValue))
+                        .Select(option => option.Match(cursorValue))
                         .Values()
                         .ToList();
 
                     if (items.Count == 0)
                     {
-                        yield return new UnrecognizedOption(currentToken.Value);
-                        input = inputValue.Next;
+                        var item = cursorValue.Skip();
+                        yield return item.Value;
+                        cursor = item.Next;
                         continue;
                     }
 
                     if (items.Count == 1)
                     {
                         yield return items[0].Value;
-                        input = items[0].Next;
+                        cursor = items[0].Next;
                         continue;
                     }
 
-                    throw new Exception("abc");
-                }
-                else
-                {
-                    var items = options
-                        .Select(option => option.Match(inputValue))
+                    var list = items
+                        .Select(
+                            item => item.Value.Accept(OnlyLongOption.Singleton).Map(
+                                option => new Cursor.Item<ParsedLongOption>(
+                                    option,
+                                    item.Next
+                                )
+                            )
+                        )
                         .Values()
                         .ToList();
 
-                    throw new Exception("abc");
-                }
-            }
-        }
-
-        private sealed class Visitor : ParsedArgument.Visitor<Opt.Option<ParsedArgument>>
-        {
-            public override Opt.Option<ParsedArgument> Visit(ParsedNonOptionArgument argument) => throw new NotSupportedException();
-            public override Opt.Option<ParsedArgument> Visit(ParsedShortOption argument) => throw new NotSupportedException();
-            public override Opt.Option<ParsedArgument> Visit(ParsedLongOption argument) => argument.Option;
-            public override Opt.Option<ParsedArgument> Visit(ParsedNumberOption argument) => throw new NotSupportedException();
-            public override Opt.Option<ParsedArgument> Visit(ParsedParametrizedOption argument) => argument.Option;
-            public override Opt.Option<ParsedArgument> Visit(OptionTerminator argument) => throw new NotSupportedException();
-            public override Opt.Option<ParsedArgument> Visit(UnrecognizedOption argument) => throw new NotSupportedException();
-            public override Opt.Option<ParsedArgument> Visit(LongOptionAmbiguity argument) => throw new NotSupportedException();
-        }
-    }
-    
-    public sealed class Options
-    {
-        private readonly Opt.Option<ParsedArgument>[] options;
-
-        public Options(params Opt.Option<ParsedArgument>[] options)
-        {
-            this.options = options;
-        }
-
-        public IEnumerable<ParsedArgument> Parse(params string[] arguments)
-        {
-            Input input = new ArgumentInput(arguments);
-            while (!input.Empty)
-            {
-                var nonOption = input.ParseNonOption();
-                if (nonOption.HasValue)
-                {
-                    var (argument, tail) = nonOption.ValueOrFailure();
-                    yield return argument;
-                    input = tail;
-                    continue;
-                }
-
-                var optionTerminator = input.ParseOptionTerminator();
-                if (optionTerminator.HasValue)
-                {
-                    foreach (var argument in optionTerminator.ValueOrFailure())
+                    if (list.Count == items.Count)
                     {
-                        yield return argument;
-                    }
+                        if (list.Count(item => item.Value.Match == LongOptionMatch.Full) == 1)
+                        {
+                            var item = list.Single(item => item.Value.Match == LongOptionMatch.Full);
+                            yield return item.Value;
+                            cursor = item.Next;
+                            continue;
+                        }
 
-                    yield break;
-                }
-
-                var pairs = options
-                    .Select(option => option.Match(input))
-                    .Values()
-                    .ToList();
-
-                if (pairs.Count == 0)
-                {
-                    var (option, tail) = input.Skip();
-                    yield return option;
-                    input = tail;
-                    continue;
-                }
-
-                if (pairs.Count == 1)
-                {
-                    yield return pairs[0].Result;
-                    input = pairs[0].Tail;
-                    continue;
-                }
-
-                {
-                    if (pairs.All(pair => pair.Result is ParsedLongOption { Match: LongOptionMatch.Prefix } or ParsedParametrizedOption))
-                    {
                         yield return new LongOptionAmbiguity(
-                            pairs.Select(pair => pair.Result.Accept(new Visitor())).ToList()
+                            list.Select(item => item.Value.Option).ToList()
                         );
-                        // todo test and fix
-                        input = pairs.First().Tail;
+
+                        cursor = list.OrderBy(item => item.Next.Map(c => (long)c.Offset).Or(long.MaxValue)).First().Next;
                         continue;
                     }
 
-                    var (result, tail) = pairs.Single(pair => ((ParsedLongOption)pair.Result).Match == LongOptionMatch.Full);
-                    yield return result;
-                    input = tail;
-                    continue;
-
-                    throw new Exception("abc");
+                    throw new NotSupportedException();
                 }
             }
         }
 
-        private sealed class Visitor : ParsedArgument.Visitor<Opt.Option<ParsedArgument>>
+        private sealed class Visitor : ParsedArgument.Visitor<Opt.Option2>
         {
-            public override Opt.Option<ParsedArgument> Visit(ParsedNonOptionArgument argument) => throw new NotSupportedException();
-            public override Opt.Option<ParsedArgument> Visit(ParsedShortOption argument) => throw new NotSupportedException();
-            public override Opt.Option<ParsedArgument> Visit(ParsedLongOption argument) => argument.Option;
-            public override Opt.Option<ParsedArgument> Visit(ParsedNumberOption argument) => throw new NotSupportedException();
-            public override Opt.Option<ParsedArgument> Visit(ParsedParametrizedOption argument) => argument.Option;
-            public override Opt.Option<ParsedArgument> Visit(OptionTerminator argument) => throw new NotSupportedException();
-            public override Opt.Option<ParsedArgument> Visit(UnrecognizedOption argument) => throw new NotSupportedException();
-            public override Opt.Option<ParsedArgument> Visit(LongOptionAmbiguity argument) => throw new NotSupportedException();
+            public override Option2 Visit(ParsedNonOptionArgument argument) => throw new NotSupportedException();
+            public override Option2 Visit(ParsedShortOption argument) => throw new NotSupportedException();
+            public override Option2 Visit(ParsedLongOption argument) => argument.Option;
+            public override Option2 Visit(ParsedNumber argument) => throw new NotSupportedException();
+            public override Option2 Visit(ParsedParametrizedOption argument) => argument.Option;
+            public override Option2 Visit(OptionTerminator argument) => throw new NotSupportedException();
+            public override Option2 Visit(UnrecognizedOption argument) => throw new NotSupportedException();
+            public override Option2 Visit(LongOptionAmbiguity argument) => throw new NotSupportedException();
+            public override Option2 Visit(MissingParameter argument) => argument.Option;
+        }
+
+        private sealed class OnlyLongOption : ParsedArgument.Visitor<Optional.Option<ParsedLongOption>>
+        {
+            public static OnlyLongOption Singleton { get; } = new OnlyLongOption();
+
+            public override Optional.Option<ParsedLongOption> Visit(ParsedNonOptionArgument argument) => Option.None<ParsedLongOption>();
+            public override Optional.Option<ParsedLongOption> Visit(ParsedShortOption argument) => Option.None<ParsedLongOption>();
+            public override Optional.Option<ParsedLongOption> Visit(ParsedLongOption argument) => argument.Some();
+            public override Optional.Option<ParsedLongOption> Visit(ParsedNumber argument) => Option.None<ParsedLongOption>();
+            public override Optional.Option<ParsedLongOption> Visit(ParsedParametrizedOption argument) => Option.None<ParsedLongOption>();
+            public override Optional.Option<ParsedLongOption> Visit(OptionTerminator argument) => Option.None<ParsedLongOption>();
+            public override Optional.Option<ParsedLongOption> Visit(UnrecognizedOption argument) => Option.None<ParsedLongOption>();
+            public override Optional.Option<ParsedLongOption> Visit(LongOptionAmbiguity argument) => Option.None<ParsedLongOption>();
+            public override Optional.Option<ParsedLongOption> Visit(MissingParameter argument) => Option.None<ParsedLongOption>();
         }
     }
 }

@@ -1,8 +1,8 @@
 ﻿namespace CommandLine.Opt.Parsed
 {
-    public sealed class ParsedNumberOption : ParsedArgument
+    public sealed class ParsedNumber : ParsedArgument
     {
-        public ParsedNumberOption(long value)
+        public ParsedNumber(long value)
         {
             Value = value;
         }

@@ -80,7 +80,7 @@ namespace CommandLine.Inputs
                 // todo check overflow
                 if (long.TryParse(current.AsSpan()[1..end], NumberStyles.None, CultureInfo.InvariantCulture, out var value))
                 {
-                    ParsedArgument option = new ParsedNumberOption(value);
+                    ParsedArgument option = new ParsedNumber(value);
                     Input next = end == current.Length
                         ? new ArgumentInput(tail)
                         : new ShortArgumentInput(current, end, tail);

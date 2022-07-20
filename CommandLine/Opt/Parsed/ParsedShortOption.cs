@@ -2,12 +2,12 @@
 {
     public sealed class ParsedShortOption : ParsedArgument
     {
-        public ParsedShortOption(Option<ParsedArgument> option)
+        public ParsedShortOption(Option2 option)
         {
             Option = option;
         }
 
-        public Option<ParsedArgument> Option { get; }
+        public Option2 Option { get; }
 
         public override T Accept<T>(Visitor<T> visitor) => visitor.Visit(this);
     }
