@@ -5,6 +5,10 @@ namespace CommandLine
 {
     public sealed class TokenMiddle : Cursor
     {
+        private readonly int index;
+        private readonly TokenStart start;
+        private readonly Token token;
+
         public TokenMiddle(Token token, int index, TokenStart start)
         {
             this.token = token;
@@ -12,11 +16,9 @@ namespace CommandLine
             this.start = start;
         }
 
-        private readonly Token token;
-        private readonly int index;
-        private readonly TokenStart start;
-
         public override int Offset => start.Offset + index;
+        public ReadOnlySpan<char> Content => token.Value.AsSpan(index);
+        public bool AtTokenStart => index == 1;
         public override Option<TokenStart> MatchWholeToken() => Option.None<TokenStart>();
         public override Option<TokenMiddle> MatchShort() => this.Some();
 
@@ -45,8 +47,5 @@ namespace CommandLine
 
             throw new ArgumentOutOfRangeException(nameof(chars), "must not exceed chars left in current token");
         }
-
-        public ReadOnlySpan<char> Content => token.Value.AsSpan(index);
-        public bool AtTokenStart => index == 1;
     }
 }
