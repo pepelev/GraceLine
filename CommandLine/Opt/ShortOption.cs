@@ -1,6 +1,4 @@
-﻿using System;
-using CommandLine.Inputs;
-using CommandLine.Opt.Parsed;
+﻿using CommandLine.Opt.Parsed;
 
 namespace CommandLine.Opt
 {
