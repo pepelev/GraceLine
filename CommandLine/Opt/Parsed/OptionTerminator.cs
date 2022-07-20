@@ -1,12 +1,15 @@
-﻿namespace CommandLine.Opt.Parsed
+﻿using Optional;
+
+namespace CommandLine.Opt.Parsed
 {
     public sealed class OptionTerminator : ParsedArgument
     {
-        public static Optional.Option<Optional.Option<TokenStart>> Match(Cursor cursor) => cursor.MatchWholeToken()
+        public static OptionTerminator Singleton { get; } = new();
+
+        public static Option<Option<TokenStart>> Match(Cursor cursor) => cursor.MatchWholeToken()
             .Filter(token => token.CurrentToken.Type == TokenType.DoubleHyphen)
             .Map(token => token.Next);
 
-        public static OptionTerminator Singleton { get; } = new();
         public override string ToString() => "--";
         public override T Accept<T>(Visitor<T> visitor) => visitor.Visit(this);
     }

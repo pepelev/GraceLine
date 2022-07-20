@@ -1,4 +1,5 @@
 ﻿using CommandLine.Opt.Parsed;
+using Optional;
 
 namespace CommandLine.Opt
 {
@@ -13,7 +14,7 @@ namespace CommandLine.Opt
 
         public override string ToString() => $"-{key}";
 
-        public override Optional.Option<Cursor.Item<ParsedArgument>> Match(Cursor cursor) => cursor.MatchShort()
+        public override Option<Cursor.Item<ParsedArgument>> Match(Cursor cursor) => cursor.MatchShort()
             .Filter(option => option.Content[0] == key)
             .Map(option => new Cursor.Item<ParsedArgument>(
                     new ParsedShortOption(this),

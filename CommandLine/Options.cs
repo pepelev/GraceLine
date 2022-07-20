@@ -6,14 +6,15 @@ using CommandLine.Opt.Parsed;
 using Optional;
 using Optional.Collections;
 using Optional.Unsafe;
+using Option = CommandLine.Opt.Option;
 
 namespace CommandLine
 {
     public sealed class Options
     {
-        private readonly Opt.Option[] options;
+        private readonly Option[] options;
 
-        public Options(params Opt.Option[] options)
+        public Options(params Option[] options)
         {
             this.options = options;
         }
@@ -111,22 +112,22 @@ namespace CommandLine
             }
         }
 
-        private sealed class Visitor : ParsedArgument.Visitor<Opt.Option>
+        private sealed class Visitor : ParsedArgument.Visitor<Option>
         {
-            public override Opt.Option Visit(ParsedNonOptionArgument argument) => throw new NotSupportedException();
-            public override Opt.Option Visit(ParsedShortOption argument) => throw new NotSupportedException();
-            public override Opt.Option Visit(ParsedLongOption argument) => argument.Option;
-            public override Opt.Option Visit(ParsedNumber argument) => throw new NotSupportedException();
-            public override Opt.Option Visit(ParsedParametrizedOption argument) => argument.Option;
-            public override Opt.Option Visit(OptionTerminator argument) => throw new NotSupportedException();
-            public override Opt.Option Visit(UnrecognizedOption argument) => throw new NotSupportedException();
-            public override Opt.Option Visit(LongOptionAmbiguity argument) => throw new NotSupportedException();
-            public override Opt.Option Visit(MissingParameter argument) => argument.Option;
+            public override Option Visit(ParsedNonOptionArgument argument) => throw new NotSupportedException();
+            public override Option Visit(ParsedShortOption argument) => throw new NotSupportedException();
+            public override Option Visit(ParsedLongOption argument) => argument.Option;
+            public override Option Visit(ParsedNumber argument) => throw new NotSupportedException();
+            public override Option Visit(ParsedParametrizedOption argument) => argument.Option;
+            public override Option Visit(OptionTerminator argument) => throw new NotSupportedException();
+            public override Option Visit(UnrecognizedOption argument) => throw new NotSupportedException();
+            public override Option Visit(LongOptionAmbiguity argument) => throw new NotSupportedException();
+            public override Option Visit(MissingParameter argument) => argument.Option;
         }
 
         private sealed class OnlyLongOption : ParsedArgument.Visitor<Option<ParsedLongOption>>
         {
-            public static OnlyLongOption Singleton { get; } = new OnlyLongOption();
+            public static OnlyLongOption Singleton { get; } = new();
 
             public override Option<ParsedLongOption> Visit(ParsedNonOptionArgument argument) => Optional.Option.None<ParsedLongOption>();
             public override Option<ParsedLongOption> Visit(ParsedShortOption argument) => Optional.Option.None<ParsedLongOption>();

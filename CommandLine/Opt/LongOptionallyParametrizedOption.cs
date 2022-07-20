@@ -6,12 +6,12 @@ namespace CommandLine.Opt
 {
     public sealed class LongOptionallyParametrizedOption : Option
     {
+        private readonly string key;
+
         public LongOptionallyParametrizedOption(string key)
         {
             this.key = key;
         }
-
-        private readonly string key;
 
         public override Option<Cursor.Item<ParsedArgument>> Match(Cursor cursor)
         {

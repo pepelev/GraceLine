@@ -35,7 +35,6 @@ namespace CommandLine.Opt
                             ).Some();
                         }
 
-
                         if (key.AsSpan().StartsWith(value.AsSpan(LongOptionPrefix)))
                         {
                             return new Cursor.Item<ParsedArgument>(

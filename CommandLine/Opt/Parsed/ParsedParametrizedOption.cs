@@ -8,8 +8,9 @@
             Parameter = parameter;
         }
 
-        public override T Accept<T>(Visitor<T> visitor) => visitor.Visit(this);
         public Option Option { get; }
         public string Parameter { get; }
+
+        public override T Accept<T>(Visitor<T> visitor) => visitor.Visit(this);
     }
 }

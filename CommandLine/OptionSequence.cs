@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Optional;
 using Optional.Unsafe;
 
 namespace CommandLine
 {
     internal sealed class OptionSequence<T> : IEnumerable<T>
     {
-        private readonly Optional.Option<T> start;
-        private readonly Func<T, Optional.Option<T>> next;
+        private readonly Option<T> start;
+        private readonly Func<T, Option<T>> next;
 
-        public OptionSequence(Optional.Option<T> start, Func<T, Optional.Option<T>> next)
+        public OptionSequence(Option<T> start, Func<T, Option<T>> next)
         {
             this.start = start;
             this.next = next;

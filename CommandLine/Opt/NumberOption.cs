@@ -21,7 +21,9 @@ namespace CommandLine.Opt
                         var content = @short.Content;
                         var end = 0;
                         while (end < content.Length && IsDigit(content[end]))
+                        {
                             end++;
+                        }
 
                         if (long.TryParse(content[..end], NumberStyles.None, CultureInfo.InvariantCulture, out var value))
                         {

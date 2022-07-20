@@ -28,16 +28,16 @@ namespace CommandLine
         }
 
         public override int Offset { get; }
-        public override Option<TokenStart> MatchWholeToken() => this.Some();
-
-        public override Option<TokenMiddle> MatchShort() => CurrentToken
-            .SomeWhen(token => token.Type == TokenType.HyphenPrefixed)
-            .Map(token => new TokenMiddle(token, 1, this));
 
         public Option<TokenStart> Next => tokens.Dequeue() is { IsEmpty: false } rest
             ? new TokenStart(rest, Offset + CurrentToken.Length).Some()
             : Option.None<TokenStart>();
 
         public Token CurrentToken => tokens.Peek();
+        public override Option<TokenStart> MatchWholeToken() => this.Some();
+
+        public override Option<TokenMiddle> MatchShort() => CurrentToken
+            .SomeWhen(token => token.Type == TokenType.HyphenPrefixed)
+            .Map(token => new TokenMiddle(token, 1, this));
     }
 }

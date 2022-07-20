@@ -206,6 +206,7 @@ namespace CommandLine
             var arguments = options.Parse("--l=error");
             Assert(arguments, (level, "error"));
         }
+
         [Test]
         public void Parse_Long_Parametrized_Option_By_Prefix_With_Short_Value()
         {
@@ -220,8 +221,9 @@ namespace CommandLine
         // ReSharper disable StringLiteralTypo
         public void Parse_Long_Parametrized_Option_Of_Two_Tokens(
                 [Values("--l", "--leve", "--level")] string key,
-                [Values("error", "info", "--level", "-a")] string value)
-        // ReSharper restore StringLiteralTypo
+                [Values("error", "info", "--level", "-a")]
+                string value)
+            // ReSharper restore StringLiteralTypo
         {
             var all = new ShortOption('a');
             var level = new LongParametrizedOption("level");
