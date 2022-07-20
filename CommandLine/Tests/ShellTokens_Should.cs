@@ -14,7 +14,7 @@ namespace CommandLine.Tests
         {
             var sut = new ShellTokens(new WholeInput(content));
 
-            CollectionAssert.IsEmpty(((IEnumerable<Token2>)sut).ToList());
+            CollectionAssert.IsEmpty(((IEnumerable<Token>)sut).ToList());
         }
 
         [Test]
@@ -76,9 +76,9 @@ namespace CommandLine.Tests
 
         }
 
-        private static IEnumerable<string> Values(IEnumerable<Token2> tokens) => tokens.Select(token => token.Value);
+        private static IEnumerable<string> Values(IEnumerable<Token> tokens) => tokens.Select(token => token.Value);
 
-        private static IEnumerable<(string Value, int From, int To)> Tuples(IEnumerable<Token2> tokens) =>
+        private static IEnumerable<(string Value, int From, int To)> Tuples(IEnumerable<Token> tokens) =>
             tokens.Select(
                 token =>
                 {

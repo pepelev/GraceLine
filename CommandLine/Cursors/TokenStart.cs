@@ -8,11 +8,11 @@ namespace CommandLine.Cursors
 {
     public sealed class TokenStart : Cursor
     {
-        private readonly ImmutableQueue<Token2> tokens;
+        private readonly ImmutableQueue<Token> tokens;
 
         public TokenStart(IEnumerable<string> tokens)
             : this(
-                ImmutableQueue.CreateRange<Token2>(
+                ImmutableQueue.CreateRange<Token>(
                     tokens.Select(
                         token => new VerbatimToken(
                             new Source.Segment(
@@ -26,7 +26,7 @@ namespace CommandLine.Cursors
         {
         }
 
-        private TokenStart(ImmutableQueue<Token2> tokens, int offset)
+        private TokenStart(ImmutableQueue<Token> tokens, int offset)
         {
             this.tokens = tokens;
             Offset = offset;
@@ -38,11 +38,11 @@ namespace CommandLine.Cursors
             ? new TokenStart(rest, Offset + CurrentToken.WholeSegment.Length).Some()
             : Option.None<TokenStart>();
 
-        public Token2 CurrentToken => tokens.Peek();
+        public Token CurrentToken => tokens.Peek();
         public override Option<TokenStart> MatchWholeToken() => this.Some();
 
         public override Option<TokenMiddle> MatchShort() => CurrentToken
-            .SomeWhen(token => new Token(token.Value).Type == TokenType.HyphenPrefixed)
+            .SomeWhen(token => new OldToken(token.Value).Type == TokenType.HyphenPrefixed)
             .Map(token => new TokenMiddle(token, 1, this));
     }
 }

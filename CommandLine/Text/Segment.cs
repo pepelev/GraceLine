@@ -7,7 +7,7 @@ using System.Text;
 namespace CommandLine.Text
 {
     // https://www.gnu.org/software/bash/manual/html_node/Quoting.html
-    public sealed class ShellTokens : IEnumerable<Token2>
+    public sealed class ShellTokens : IEnumerable<Token>
     {
         private readonly Source source;
 
@@ -16,7 +16,7 @@ namespace CommandLine.Text
             this.source = source;
         }
 
-        private sealed class ThisToken : Token2
+        private sealed class ThisToken : Token
         {
             private readonly List<int> escaping;
 
@@ -80,7 +80,7 @@ namespace CommandLine.Text
             public override Source.Segment WholeSegment { get; }
         }
 
-        IEnumerator<Token2> IEnumerable<Token2>.GetEnumerator()
+        IEnumerator<Token> IEnumerable<Token>.GetEnumerator()
         {
             var segment = new Source.Segment(source);
             while (true)
@@ -108,7 +108,7 @@ namespace CommandLine.Text
             }
         }
 
-        private static Token2 ParseToken(Source.Segment tail)
+        private static Token ParseToken(Source.Segment tail)
         {
             var content = tail.Raw;
             var escapes = new List<int>();
@@ -173,7 +173,7 @@ namespace CommandLine.Text
             return new ThisToken(tail[..offset], escapes);
         }
 
-        internal IEnumerator<Token> GetEnumerator()
+        internal IEnumerator<OldToken> GetEnumerator()
         {
             var content = source.Content;
             var temporary = new StringBuilder();
@@ -186,7 +186,7 @@ namespace CommandLine.Text
                 {
                     if (temporary.Length > 0)
                     {
-                        yield return new Token(
+                        yield return new OldToken(
                             temporary.ToString(),
                             new[]
                             {
@@ -255,7 +255,7 @@ namespace CommandLine.Text
 
             if (temporary.Length > 0)
             {
-                yield return new Token(
+                yield return new OldToken(
                     temporary.ToString(),
                     new[]
                     {

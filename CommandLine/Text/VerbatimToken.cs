@@ -2,7 +2,7 @@
 
 namespace CommandLine.Text
 {
-    public sealed class VerbatimToken : Token2
+    public sealed class VerbatimToken : Token
     {
         public VerbatimToken(Source.Segment segment)
         {

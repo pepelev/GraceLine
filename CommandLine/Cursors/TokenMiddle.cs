@@ -6,11 +6,11 @@ namespace CommandLine.Cursors
 {
     public sealed class TokenMiddle : Cursor
     {
-        private readonly Token2 token;
+        private readonly Token token;
         private readonly int index;
         private readonly TokenStart start;
 
-        public TokenMiddle(Token2 token, int index, TokenStart start)
+        public TokenMiddle(Token token, int index, TokenStart start)
         {
             this.token = token;
             this.index = index;
