@@ -3,7 +3,7 @@ using CommandLine.Opt.Parsed;
 using Optional;
 using Optional.Unsafe;
 
-namespace CommandLine
+namespace CommandLine.Cursors
 {
     public abstract class Cursor
     {

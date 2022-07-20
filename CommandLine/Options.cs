@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CommandLine.Cursors;
 using CommandLine.Opt;
 using CommandLine.Opt.Parsed;
 using Optional;

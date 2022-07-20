@@ -1,4 +1,5 @@
-﻿using Optional;
+﻿using CommandLine.Cursors;
+using Optional;
 
 namespace CommandLine.Opt.Parsed
 {

@@ -1,4 +1,5 @@
 ﻿using System;
+using CommandLine.Cursors;
 using CommandLine.Opt.Parsed;
 using Optional;
 

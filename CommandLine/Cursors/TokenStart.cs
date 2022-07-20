@@ -3,7 +3,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using Optional;
 
-namespace CommandLine
+namespace CommandLine.Cursors
 {
     public sealed class TokenStart : Cursor
     {

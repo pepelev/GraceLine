@@ -1,7 +1,7 @@
 ﻿using System;
 using Optional;
 
-namespace CommandLine
+namespace CommandLine.Cursors
 {
     public sealed class TokenMiddle : Cursor
     {
