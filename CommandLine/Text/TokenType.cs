@@ -1,4 +1,4 @@
-﻿namespace CommandLine
+﻿namespace CommandLine.Text
 {
     public enum TokenType
     {

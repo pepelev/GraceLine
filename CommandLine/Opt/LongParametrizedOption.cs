@@ -1,6 +1,7 @@
 ﻿using System;
 using CommandLine.Cursors;
 using CommandLine.Opt.Parsed;
+using CommandLine.Text;
 using Optional;
 
 namespace CommandLine.Opt

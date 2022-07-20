@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using CommandLine.Text;
 using NUnit.Framework;
 
 namespace CommandLine.Tests
@@ -13,7 +14,7 @@ namespace CommandLine.Tests
         {
             var sut = new ShellTokens(new WholeInput(content));
 
-            CollectionAssert.IsEmpty(sut);
+            CollectionAssert.IsEmpty(((IEnumerable<Token2>)sut).ToList());
         }
 
         [Test]
@@ -21,7 +22,7 @@ namespace CommandLine.Tests
         {
             var sut = new ShellTokens(new WholeInput("cat dog"));
 
-            CollectionAssert.AreEqual(new[] {"cat", "dog"}, Values(sut));
+            CollectionAssert.AreEqual(new[] { ("cat", 0, 3), ("dog", 4, 7) }, Tuples(sut));
         }
 
         [Test]
@@ -30,6 +31,14 @@ namespace CommandLine.Tests
             var sut = new ShellTokens(new WholeInput(" cat dog\t"));
 
             CollectionAssert.AreEqual(new[] {"cat", "dog"}, Values(sut));
+        }
+
+        [Test]
+        public void Give_Quoted_Token()
+        {
+            var sut = new ShellTokens(new WholeInput(" 'cat' "));
+
+            CollectionAssert.AreEqual(new[] { "cat" }, Values(sut));
         }
 
         [Test]
@@ -58,6 +67,24 @@ namespace CommandLine.Tests
             // ReSharper restore StringLiteralTypo
         }
 
-        private static IEnumerable<string> Values(IEnumerable<Token> tokens) => tokens.Select(token => token.Value);
+        [Test]
+        public void Give_Single_Token_When_Space_Escaped()
+        {
+            var sut = new ShellTokens(new WholeInput(@"cat\ dog"));
+
+            CollectionAssert.AreEqual(new[] { "cat dog" }, Values(sut));
+
+        }
+
+        private static IEnumerable<string> Values(IEnumerable<Token2> tokens) => tokens.Select(token => token.Value);
+
+        private static IEnumerable<(string Value, int From, int To)> Tuples(IEnumerable<Token> tokens) =>
+            tokens.Select(
+                token =>
+                {
+                    var segment = token.Segments.Single();
+                    return (token.Value, segment.FromInclusive, segment.ToExclusive);
+                }
+            );
     }
 }

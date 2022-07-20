@@ -4,6 +4,7 @@ using System.Linq;
 using CommandLine.Cursors;
 using CommandLine.Opt;
 using CommandLine.Opt.Parsed;
+using CommandLine.Text;
 using Optional;
 using Optional.Collections;
 using Optional.Unsafe;

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using CommandLine.Text;
 using Optional;
 
 namespace CommandLine.Cursors

@@ -1,8 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CommandLine
+namespace CommandLine.Text
 {
+    public abstract class Token2
+    {
+        public abstract string Value { get; }
+        public abstract Source.Segment Segment(Range valueRange);
+        public abstract Source.Segment WholeSegment { get; }
+    }
+
     public readonly struct Token
     {
         public Token(string value)
@@ -16,9 +23,8 @@ namespace CommandLine
             Segments = segments;
         }
 
-        public override string ToString() => Value;
-
         public string Value { get; }
+        public int Length => Value.Length;
         public IReadOnlyList<Source.Segment> Segments { get; }
 
         public TokenType Type
@@ -49,6 +55,6 @@ namespace CommandLine
             }
         }
 
-        public int Length => Value.Length;
+        public override string ToString() => Value;
     }
 }

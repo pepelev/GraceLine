@@ -1,4 +1,5 @@
 ﻿using System;
+using CommandLine.Text;
 using Optional;
 
 namespace CommandLine.Cursors

@@ -11,13 +11,13 @@ namespace CommandLine.Opt
 
         public override Option<Cursor.Item<ParsedArgument>> Match(Cursor cursor)
         {
-            // todo inspect char.IsDigit();
+            // char.IsDigit() is not used because it works not only for 0..9
             static bool IsDigit(char @char) => '0' <= @char && @char <= '9';
 
             return cursor.MatchShort()
-                .Filter(@short => @short.AtTokenStart)
+                .Filter(static @short => @short.AtTokenStart)
                 .FlatMap(
-                    @short =>
+                    static @short =>
                     {
                         var content = @short.Content;
                         var end = 0;
