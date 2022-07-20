@@ -6,30 +6,30 @@ using NUnit.Framework;
 
 namespace CommandLine
 {
-    public sealed class Options_Should
+    public sealed class Arguments_Should
     {
         [Test]
         public void Parse_Empty_Arguments_When_Empty()
         {
-            var options = new Options();
+            var arguments = new Arguments();
 
-            var arguments = options.Parse();
+            var parsedArguments = arguments.Parse();
 
-            CollectionAssert.IsEmpty(arguments);
+            CollectionAssert.IsEmpty(parsedArguments);
         }
 
         [Test]
         public void Parse_Empty_Arguments_When_Has_Options()
         {
-            var options = new Options(
+            var arguments = new Arguments(
                 new ShortOption('a'),
                 new ShortOption('b'),
                 new ShortOption('c')
             );
 
-            var arguments = options.Parse();
+            var parsedArguments = arguments.Parse();
 
-            CollectionAssert.IsEmpty(arguments);
+            CollectionAssert.IsEmpty(parsedArguments);
         }
 
         [Test]
@@ -38,11 +38,11 @@ namespace CommandLine
             var a = new ShortOption('a');
             var b = new ShortOption('b');
             var c = new ShortOption('c');
-            var options = new Options(a, b, c);
+            var arguments = new Arguments(a, b, c);
 
-            var arguments = options.Parse("-a", "-c", "-b");
+            var parsedArguments = arguments.Parse("-a", "-c", "-b");
 
-            Assert(arguments, a, c, b);
+            Assert(parsedArguments, a, c, b);
         }
 
         [Test]
@@ -51,11 +51,11 @@ namespace CommandLine
             var a = new ShortOption('a');
             var b = new ShortOption('b');
             var c = new ShortOption('c');
-            var options = new Options(a, b, c);
+            var arguments = new Arguments(a, b, c);
 
-            var arguments = options.Parse("-a", "-c", "-a");
+            var parsedArguments = arguments.Parse("-a", "-c", "-a");
 
-            Assert(arguments, a, c, a);
+            Assert(parsedArguments, a, c, a);
         }
 
         [Test]
@@ -64,13 +64,13 @@ namespace CommandLine
             var r = new ShortOption('r');
             var n = new ShortOption('n');
             var x = new ShortOption('x');
-            var options = new Options(r, n, x);
+            var arguments = new Arguments(r, n, x);
 
             // ReSharper disable StringLiteralTypo
-            var arguments = options.Parse("-xrnx");
+            var parsedArguments = arguments.Parse("-xrnx");
             // ReSharper restore StringLiteralTypo
 
-            Assert(arguments, x, r, n, x);
+            Assert(parsedArguments, x, r, n, x);
         }
 
         [Test]
@@ -79,13 +79,13 @@ namespace CommandLine
             var r = new ShortOption('r');
             var n = new ShortOption('n');
             var x = new ShortOption('x');
-            var options = new Options(r, n, x);
+            var arguments = new Arguments(r, n, x);
 
             // ReSharper disable StringLiteralTypo
-            var arguments = options.Parse("-x", "-k");
+            var parsedArguments = arguments.Parse("-x", "-k");
             // ReSharper restore StringLiteralTypo
 
-            Assert(arguments, x, Unrecognized("k"));
+            Assert(parsedArguments, x, Unrecognized("k"));
         }
 
         [Test]
@@ -94,13 +94,13 @@ namespace CommandLine
             var r = new ShortOption('r');
             var n = new ShortOption('n');
             var x = new ShortOption('x');
-            var options = new Options(r, n, x);
+            var arguments = new Arguments(r, n, x);
 
             // ReSharper disable StringLiteralTypo
-            var arguments = options.Parse("-xkn");
+            var parsedArguments = arguments.Parse("-xkn");
             // ReSharper restore StringLiteralTypo
 
-            Assert(arguments, x, Unrecognized("k"), n);
+            Assert(parsedArguments, x, Unrecognized("k"), n);
         }
 
         [Test]
@@ -109,13 +109,13 @@ namespace CommandLine
             var r = new ShortOption('r');
             var n = new ShortOption('n');
             var x = new ShortOption('x');
-            var options = new Options(r, n, x);
+            var arguments = new Arguments(r, n, x);
 
             // ReSharper disable StringLiteralTypo
-            var arguments = options.Parse("-knr");
+            var parsedArguments = arguments.Parse("-knr");
             // ReSharper restore StringLiteralTypo
 
-            Assert(arguments, Unrecognized("k"), n, r);
+            Assert(parsedArguments, Unrecognized("k"), n, r);
         }
 
         [Test]
@@ -124,11 +124,11 @@ namespace CommandLine
             var help = new LongOption("help");
             var output = new LongOption("output");
             var binary = new LongOption("binary");
-            var options = new Options(help, output, binary);
+            var arguments = new Arguments(help, output, binary);
 
-            var arguments = options.Parse("--binary", "--help", "--output");
+            var parsedArguments = arguments.Parse("--binary", "--help", "--output");
 
-            Assert(arguments, binary, help, output);
+            Assert(parsedArguments, binary, help, output);
         }
 
         [Test]
@@ -137,24 +137,24 @@ namespace CommandLine
             var help = new LongOption("help");
             var quick = new LongOption("quick");
             var quiet = new LongOption("quiet");
-            var options = new Options(help, quick, quiet);
+            var arguments = new Arguments(help, quick, quiet);
 
             // ReSharper disable StringLiteralTypo
-            var arguments = options.Parse("--h", "--quie");
+            var parsedArguments = arguments.Parse("--h", "--quie");
             // ReSharper restore StringLiteralTypo
 
-            Assert(arguments, help, quiet);
+            Assert(parsedArguments, help, quiet);
         }
 
         [Test]
         public void Parse_Unknown_Long_Options([Values("--cell", "--sells")] string argument)
         {
             var sell = new LongOption("sell");
-            var options = new Options(sell);
+            var arguments = new Arguments(sell);
 
-            var arguments = options.Parse(argument);
+            var parsedArguments = arguments.Parse(argument);
 
-            Assert(arguments, Unrecognized(argument));
+            Assert(parsedArguments, Unrecognized(argument));
         }
 
         [Test] // todo ambiguous options with parameter and mixed (parameter and without parameter)
@@ -163,13 +163,13 @@ namespace CommandLine
             var help = new LongOption("help");
             var quick = new LongOption("quick");
             var quiet = new LongOption("quiet");
-            var options = new Options(help, quick, quiet);
+            var arguments = new Arguments(help, quick, quiet);
 
             // ReSharper disable StringLiteralTypo
-            var arguments = options.Parse("--help", "--qui");
+            var parsedArguments = arguments.Parse("--help", "--qui");
             // ReSharper restore StringLiteralTypo
 
-            Assert(arguments, help, Ambiguity(quick, quiet));
+            Assert(parsedArguments, help, Ambiguity(quick, quiet));
         }
 
         [Test]
@@ -178,43 +178,43 @@ namespace CommandLine
             var help = new LongOption("help");
             var quick = new LongOption("quick");
             var quickly = new LongOption("quickly");
-            var options = new Options(help, quick, quickly);
+            var arguments = new Arguments(help, quick, quickly);
 
             // ReSharper disable StringLiteralTypo
-            var arguments = options.Parse("--quick").ToList();
+            var parsedArguments = arguments.Parse("--quick").ToList();
             // ReSharper restore StringLiteralTypo
 
-            Assert(arguments, quick);
+            Assert(parsedArguments, quick);
         }
 
         [Test]
         public void Parse_Long_Parametrized_Option()
         {
             var level = new LongParametrizedOption("level");
-            var options = new Options(level);
+            var arguments = new Arguments(level);
 
-            var arguments = options.Parse("--level=info");
-            Assert(arguments, (level, "info"));
+            var parsedArguments = arguments.Parse("--level=info");
+            Assert(parsedArguments, (level, "info"));
         }
 
         [Test]
         public void Parse_Long_Parametrized_Option_By_Prefix()
         {
             var level = new LongParametrizedOption("level");
-            var options = new Options(level);
+            var arguments = new Arguments(level);
 
-            var arguments = options.Parse("--l=error");
-            Assert(arguments, (level, "error"));
+            var parsedArguments = arguments.Parse("--l=error");
+            Assert(parsedArguments, (level, "error"));
         }
 
         [Test]
         public void Parse_Long_Parametrized_Option_By_Prefix_With_Short_Value()
         {
             var level = new LongParametrizedOption("level");
-            var options = new Options(level);
+            var arguments = new Arguments(level);
 
-            var arguments = options.Parse("--l=1");
-            Assert(arguments, (level, "1"));
+            var parsedArguments = arguments.Parse("--l=1");
+            Assert(parsedArguments, (level, "1"));
         }
 
         [Test]
@@ -227,20 +227,20 @@ namespace CommandLine
         {
             var all = new ShortOption('a');
             var level = new LongParametrizedOption("level");
-            var options = new Options(level, all);
+            var arguments = new Arguments(level, all);
 
-            var arguments = options.Parse(key, value);
-            Assert(arguments, (level, value));
+            var parsedArguments = arguments.Parse(key, value);
+            Assert(parsedArguments, (level, value));
         }
 
         [Test]
         public void Parse_Long_Parametrized_Option_With_Missing_Parameter()
         {
             var level = new LongParametrizedOption("level");
-            var options = new Options(level);
+            var arguments = new Arguments(level);
 
-            var arguments = options.Parse("--level");
-            Assert(arguments, (level, "MISSING"));
+            var parsedArguments = arguments.Parse("--level");
+            Assert(parsedArguments, (level, "MISSING"));
         }
 
         [Test]
@@ -249,70 +249,70 @@ namespace CommandLine
             var all = new ShortOption('a');
             var beep = new LongParametrizedOption("beep");
             var binary = new LongParametrizedOption("binary");
-            var options = new Options(all, beep, binary);
+            var arguments = new Arguments(all, beep, binary);
 
-            var arguments = options.Parse("-a", "--b=true");
-            Assert(arguments, all, Ambiguity(beep, binary));
+            var parsedArguments = arguments.Parse("-a", "--b=true");
+            Assert(parsedArguments, all, Ambiguity(beep, binary));
         }
 
         [Test]
         public void Parse_Long_Option_With_Optional_Parameter()
         {
             var beep = new LongOptionallyParametrizedOption("beep");
-            var options = new Options(beep);
+            var arguments = new Arguments(beep);
 
-            var arguments = options.Parse("--beep=loud");
-            Assert(arguments, (beep, "loud"));
+            var parsedArguments = arguments.Parse("--beep=loud");
+            Assert(parsedArguments, (beep, "loud"));
         }
 
         [Test]
         public void Parse_Long_Option_With_Optional_Parameter_By_Prefix()
         {
             var beep = new LongOptionallyParametrizedOption("beep");
-            var options = new Options(beep);
+            var arguments = new Arguments(beep);
 
-            var arguments = options.Parse("--b=loud");
-            Assert(arguments, (beep, "loud"));
+            var parsedArguments = arguments.Parse("--b=loud");
+            Assert(parsedArguments, (beep, "loud"));
         }
 
         [Test]
         public void Parse_Long_Option_With_Empty_Optional_Parameter()
         {
             var beep = new LongOptionallyParametrizedOption("beep");
-            var options = new Options(beep);
+            var arguments = new Arguments(beep);
 
-            var arguments = options.Parse("--beep=");
-            Assert(arguments, (beep, ""));
+            var parsedArguments = arguments.Parse("--beep=");
+            Assert(parsedArguments, (beep, ""));
         }
 
         [Test]
         public void Parse_Long_Option_Without_Optional_Parameter()
         {
             var beep = new LongOptionallyParametrizedOption("beep");
-            var options = new Options(beep);
+            var arguments = new Arguments(beep);
 
-            var arguments = options.Parse("--beep");
-            Assert(arguments, (beep, "NO_PARAMETER"));
+            var parsedArguments = arguments.Parse("--beep");
+            Assert(parsedArguments, (beep, "NO_PARAMETER"));
         }
 
         [Test]
         public void Parse_Long_Option_Without_Optional_Parameter2()
         {
             var beep = new LongOptionallyParametrizedOption("beep");
-            var options = new Options(beep);
+            var arguments = new Arguments(beep);
 
-            var arguments = options.Parse("--beep", "argument");
-            Assert(arguments, (beep, "NO_PARAMETER"), "argument");
+            var parsedArguments = arguments.Parse("--beep", "argument");
+            Assert(parsedArguments, (beep, "NO_PARAMETER"), "argument");
         }
 
         [Test]
         public void Parse_Long_Option_Mimic()
         {
             var beep = new LongOptionallyParametrizedOption("beep");
-            var options = new Options(beep);
+            var arguments = new Arguments(beep);
 
-            var arguments = options.Parse("--=", "argument");
-            Assert(arguments, Unrecognized("--="), "argument");
+            var parsedArguments = arguments.Parse("--=", "argument");
+            Assert(parsedArguments, Unrecognized("--="), "argument");
         }
 
         [Test]
@@ -321,11 +321,11 @@ namespace CommandLine
             var a = new ShortOption('a');
             var b = new ShortOption('b');
             var c = new ShortOption('c');
-            var options = new Options(a, b, c);
+            var arguments = new Arguments(a, b, c);
 
-            var arguments = options.Parse(argument);
+            var parsedArguments = arguments.Parse(argument);
 
-            Assert(arguments, argument);
+            Assert(parsedArguments, argument);
         }
 
         [Test]
@@ -333,11 +333,11 @@ namespace CommandLine
         {
             var a = new ShortOption('a');
             var b = new ShortOption('b');
-            var options = new Options(a, b);
+            var arguments = new Arguments(a, b);
 
-            var arguments = options.Parse("-a", "filename.txt", "-b");
+            var parsedArguments = arguments.Parse("-a", "filename.txt", "-b");
 
-            Assert(arguments, a, "filename.txt", b);
+            Assert(parsedArguments, a, "filename.txt", b);
         }
 
         [Test]
@@ -347,11 +347,11 @@ namespace CommandLine
             var b = new ShortOption('b');
             var help = new LongOption("help");
             var count = NumberOption.Singleton;
-            var options = new Options(a, b, help, count);
+            var arguments = new Arguments(a, b, help, count);
 
-            var arguments = options.Parse("-a", "--", "filename.txt", "-b", "--help", "-5");
+            var parsedArguments = arguments.Parse("-a", "--", "filename.txt", "-b", "--help", "-5");
 
-            Assert(arguments, a, OptionTerminator.Singleton, "filename.txt", "-b", "--help", "-5");
+            Assert(parsedArguments, a, OptionTerminator.Singleton, "filename.txt", "-b", "--help", "-5");
         }
 
         [Test]
@@ -359,11 +359,11 @@ namespace CommandLine
         {
             var help = new LongOption("help");
             var count = new ShortParameterizedOption('c');
-            var options = new Options(count, help);
+            var arguments = new Arguments(count, help);
 
-            var arguments = options.Parse("-c100");
+            var parsedArguments = arguments.Parse("-c100");
 
-            Assert(arguments, (count, "100"));
+            Assert(parsedArguments, (count, "100"));
         }
 
         [Test]
@@ -372,11 +372,11 @@ namespace CommandLine
             var help = new LongOption("help");
             var count = new ShortParameterizedOption('c');
             var all = new ShortOption('a');
-            var options = new Options(all, count, help);
+            var arguments = new Arguments(all, count, help);
 
-            var arguments = options.Parse("-ac100");
+            var parsedArguments = arguments.Parse("-ac100");
 
-            Assert(arguments, all, (count, "100"));
+            Assert(parsedArguments, all, (count, "100"));
         }
 
         [Test]
@@ -384,11 +384,11 @@ namespace CommandLine
         {
             var help = new LongOption("help");
             var count = new ShortParameterizedOption('c');
-            var options = new Options(count, help);
+            var arguments = new Arguments(count, help);
 
-            var arguments = options.Parse("-c", "100");
+            var parsedArguments = arguments.Parse("-c", "100");
 
-            Assert(arguments, (count, "100"));
+            Assert(parsedArguments, (count, "100"));
         }
 
         [Test]
@@ -397,11 +397,11 @@ namespace CommandLine
             var all = new ShortOption('a');
             var help = new LongOption("help");
             var count = new ShortParameterizedOption('c');
-            var options = new Options(count, help, all);
+            var arguments = new Arguments(count, help, all);
 
-            var arguments = options.Parse("-ac");
+            var parsedArguments = arguments.Parse("-ac");
 
-            Assert(arguments, all, (count, "MISSING"));
+            Assert(parsedArguments, all, (count, "MISSING"));
         }
 
         [Test]
@@ -409,11 +409,11 @@ namespace CommandLine
         {
             var help = new LongOption("help");
             var count = NumberOption.Singleton;
-            var options = new Options(count, help);
+            var arguments = new Arguments(count, help);
 
-            var arguments = options.Parse("--help", "-42");
+            var parsedArguments = arguments.Parse("--help", "-42");
 
-            Assert(arguments, help, 42);
+            Assert(parsedArguments, help, 42);
         }
 
         [Test]
@@ -422,11 +422,11 @@ namespace CommandLine
             var help = new LongOption("help");
             var count = NumberOption.Singleton;
             var quiet = new ShortOption('q');
-            var options = new Options(count, help, quiet);
+            var arguments = new Arguments(count, help, quiet);
 
-            var arguments = options.Parse("--help", "-42q");
+            var parsedArguments = arguments.Parse("--help", "-42q");
 
-            Assert(arguments, help, 42, quiet);
+            Assert(parsedArguments, help, 42, quiet);
         }
 
         [Test]
@@ -435,11 +435,11 @@ namespace CommandLine
             var help = new LongOption("help");
             var count = NumberOption.Singleton;
             var quiet = new ShortOption('q');
-            var options = new Options(count, help, quiet);
+            var arguments = new Arguments(count, help, quiet);
 
-            var arguments = options.Parse("--help", "-q50");
+            var parsedArguments = arguments.Parse("--help", "-q50");
 
-            Assert(arguments, help, quiet, Unrecognized("5"), Unrecognized("0"));
+            Assert(parsedArguments, help, quiet, Unrecognized("5"), Unrecognized("0"));
         }
 
         private static void Assert(IEnumerable<ParsedArgument> arguments, params object[] expected)

@@ -11,11 +11,11 @@ using Option = CommandLine.Opt.Option;
 
 namespace CommandLine
 {
-    public sealed class Options
+    public sealed class Arguments
     {
         private readonly Option[] options;
 
-        public Options(params Option[] options)
+        public Arguments(params Option[] options)
         {
             this.options = options;
         }
