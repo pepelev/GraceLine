@@ -8,6 +8,12 @@ namespace CommandLine.Tests
 {
     public sealed class Arguments_Should
     {
+        private sealed class Terminator
+        {
+            public static Terminator Singleton { get; } = new();
+            public override string ToString() => "--";
+        }
+
         [Test]
         public void Parse_Empty_Arguments_When_Empty()
         {
@@ -351,7 +357,7 @@ namespace CommandLine.Tests
 
             var parsedArguments = arguments.Parse("-a", "--", "filename.txt", "-b", "--help", "-5");
 
-            Assert(parsedArguments, a, OptionTerminator.Singleton, "filename.txt", "-b", "--help", "-5");
+            Assert(parsedArguments, a, Terminator.Singleton, "filename.txt", "-b", "--help", "-5");
         }
 
         [Test]
@@ -461,7 +467,7 @@ namespace CommandLine.Tests
             public override object Visit(ParsedLongOption argument) => argument.Option;
             public override object Visit(ParsedNumber argument) => argument.Value;
             public override object Visit(ParsedParametrizedOption argument) => (argument.Option, argument.Parameter ?? "NO_PARAMETER");
-            public override object Visit(OptionTerminator argument) => argument;
+            public override object Visit(OptionTerminator argument) => Terminator.Singleton;
             public override object Visit(UnrecognizedOption argument) => Unrecognized(argument.Content);
             public override object Visit(LongOptionAmbiguity argument) => argument.Options.ToArray();
             public override object Visit(MissingParameter argument) => (argument.Option, "MISSING");

@@ -30,11 +30,14 @@ namespace CommandLine
             while (cursor.HasValue)
             {
                 var cursorValue = cursor.ValueOrFailure();
-                if (OptionTerminator.Match(cursorValue) is { HasValue: true } tail)
+                if (OptionTerminator.Match(cursorValue) is { HasValue: true } terminator)
                 {
-                    yield return OptionTerminator.Singleton;
+                    yield return terminator.ValueOrFailure().Value;
 
-                    var restArguments = new OptionSequence<TokenStart>(tail.ValueOrFailure(), token => token.Next);
+                    var restArguments = new OptionSequence<TokenStart>(
+                        terminator.ValueOrFailure().Next.Map(token => (TokenStart)token),
+                        token => token.Next
+                    );
                     foreach (var argument in restArguments)
                     {
                         yield return new ParsedNonOptionArgument(argument.CurrentToken.Value.Content);

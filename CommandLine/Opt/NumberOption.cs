@@ -29,7 +29,11 @@ namespace CommandLine.Opt
                         if (long.TryParse(content[..end], NumberStyles.None, CultureInfo.InvariantCulture, out var value))
                         {
                             return new Cursor.Item<ParsedArgument>(
-                                new ParsedNumber(value),
+                                new ParsedNumber(
+                                    value,
+                                    @short.CurrentToken,
+                                    @short.CurrentToken.Segment(..end)
+                                ),
                                 @short.Skip(end)
                             ).Some();
                         }

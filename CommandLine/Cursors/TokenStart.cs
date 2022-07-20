@@ -41,8 +41,9 @@ namespace CommandLine.Cursors
         public Token CurrentToken => tokens.Peek();
         public override Option<TokenStart> MatchWholeToken() => this.Some();
 
-        public override Option<TokenMiddle> MatchShort() => CurrentToken
-            .SomeWhen(token => token.Value.Type == TokenType.HyphenPrefixed)
-            .Map(token => new TokenMiddle(token, 1, this));
+        public override Option<TokenMiddle> MatchShort()
+            => this.SomeWhen(
+                cursor => cursor.CurrentToken.Value.Type == TokenType.HyphenPrefixed
+            ).Map(cursor => new TokenMiddle(1, cursor));
     }
 }

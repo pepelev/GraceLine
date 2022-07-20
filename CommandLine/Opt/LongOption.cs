@@ -25,13 +25,15 @@ namespace CommandLine.Opt
                 .FlatMap(
                     token =>
                     {
-                        var value = token.CurrentToken.Value.Content;
+                        var currentToken = token.CurrentToken;
+                        var value = currentToken.Value.Content;
                         if (key.AsSpan().SequenceEqual(value.AsSpan(LongOptionPrefix)))
                         {
                             return new Cursor.Item<ParsedArgument>(
                                 new ParsedLongOption(
                                     this,
-                                    LongOptionMatch.Full
+                                    LongOptionMatch.Full,
+                                    currentToken
                                 ),
                                 token.Next.Upcast()
                             ).Some();
@@ -42,7 +44,8 @@ namespace CommandLine.Opt
                             return new Cursor.Item<ParsedArgument>(
                                 new ParsedLongOption(
                                     this,
-                                    LongOptionMatch.Prefix
+                                    LongOptionMatch.Prefix,
+                                    currentToken
                                 ),
                                 token.Next.Upcast()
                             ).Some();
