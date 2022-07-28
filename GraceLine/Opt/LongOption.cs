@@ -19,19 +19,21 @@ namespace GraceLine.Opt
 
         public override Option<Cursor.Item<ParsedArgument>> Match(Cursor cursor)
         {
+            // todo introduce general place for such constants
             const int LongOptionPrefix = 2;
             return cursor.MatchWholeToken()
-                .Filter(token => token.CurrentToken.Value.Type == TokenType.DoubleHyphenPrefixed)
+                .Filter(static token => token.CurrentToken.Value.Type == TokenType.DoubleHyphenPrefixed)
                 .FlatMap(
-                    token =>
+                    this,
+                    static (@this, token) =>
                     {
                         var currentToken = token.CurrentToken;
                         var value = currentToken.Value.Content;
-                        if (key.AsSpan().SequenceEqual(value.AsSpan(LongOptionPrefix)))
+                        if (@this.key.AsSpan().SequenceEqual(value.AsSpan(LongOptionPrefix)))
                         {
                             return new Cursor.Item<ParsedArgument>(
                                 new ParsedLongOption(
-                                    this,
+                                    @this,
                                     LongOptionMatch.Full,
                                     currentToken
                                 ),
@@ -39,11 +41,11 @@ namespace GraceLine.Opt
                             ).Some();
                         }
 
-                        if (key.AsSpan().StartsWith(value.AsSpan(LongOptionPrefix)))
+                        if (@this.key.AsSpan().StartsWith(value.AsSpan(LongOptionPrefix)))
                         {
                             return new Cursor.Item<ParsedArgument>(
                                 new ParsedLongOption(
-                                    this,
+                                    @this,
                                     LongOptionMatch.Prefix,
                                     currentToken
                                 ),

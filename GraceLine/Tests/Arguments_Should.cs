@@ -462,11 +462,11 @@ namespace GraceLine.Tests
         private sealed class AssertConversion : ParsedArgument.Visitor<object>
         {
             public static AssertConversion Singleton { get; } = new();
-            public override object Visit(ParsedNonOptionArgument argument) => argument.Value;
+            public override object Visit(ParsedNonOptionArgument argument) => argument.Token.Value.Content;
             public override object Visit(ParsedShortOption argument) => argument.Option;
             public override object Visit(ParsedLongOption argument) => argument.Option;
             public override object Visit(ParsedNumber argument) => argument.Value;
-            public override object Visit(ParsedParametrizedOption argument) => (argument.Option, argument.Parameter ?? "NO_PARAMETER");
+            public override object Visit(ParsedParametrizedOption argument) => (argument.Option, argument.Argument ?? "NO_PARAMETER");
             public override object Visit(OptionTerminator argument) => Terminator.Singleton;
             public override object Visit(UnrecognizedOption argument) => Unrecognized(argument.Content);
             public override object Visit(LongOptionAmbiguity argument) => argument.Options.ToArray();

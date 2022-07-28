@@ -14,7 +14,7 @@ namespace GraceLine.Tests
         {
             var sut = new ShellTokens(new WholeInput(content));
 
-            CollectionAssert.IsEmpty(((IEnumerable<Token>)sut).ToList());
+            CollectionAssert.IsEmpty(sut.ToList());
         }
 
         [Test]

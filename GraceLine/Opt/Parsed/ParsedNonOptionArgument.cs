@@ -1,13 +1,15 @@
-﻿namespace GraceLine.Opt.Parsed
+﻿using GraceLine.Text;
+
+namespace GraceLine.Opt.Parsed
 {
     public sealed class ParsedNonOptionArgument : ParsedArgument
     {
-        public ParsedNonOptionArgument(string value)
+        public ParsedNonOptionArgument(Token token)
         {
-            Value = value;
+            Token = token;
         }
 
-        public string Value { get; }
+        public Token Token { get; }
         public override T Accept<T>(Visitor<T> visitor) => visitor.Visit(this);
     }
 }

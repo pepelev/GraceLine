@@ -34,7 +34,7 @@ namespace GraceLine.Opt
                                     @short.CurrentToken,
                                     @short.CurrentToken.Segment(..end)
                                 ),
-                                @short.Skip(end)
+                                @short.Feed(end)
                             ).Some();
                         }
 

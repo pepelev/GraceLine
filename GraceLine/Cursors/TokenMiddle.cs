@@ -19,10 +19,17 @@ namespace GraceLine.Cursors
         public ReadOnlySpan<char> Content => CurrentToken.Value.Content.AsSpan(index);
         public bool AtTokenStart => index == 1;
         public Token CurrentToken => start.CurrentToken;
+
+        public Source.Segment Segment(int chars) => AtTokenStart
+            ? CurrentToken.Segment(..(index + chars))
+            : CurrentToken.Segment(index..(index + chars));
+
         public override Option<TokenStart> MatchWholeToken() => Option.None<TokenStart>();
         public override Option<TokenMiddle> MatchShort() => this.Some();
 
-        public Option<Cursor> Skip(int chars)
+        public Option<TokenStart> FeedToNextToken() => start.Next;
+
+        public Option<Cursor> Feed(int chars)
         {
             if (chars == 0)
             {

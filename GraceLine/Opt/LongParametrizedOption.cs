@@ -32,7 +32,7 @@ namespace GraceLine.Opt
                             {
                                 return token.Next.Match(
                                     none: () => new Cursor.Item<ParsedArgument>(
-                                        new MissingParameter(this),
+                                        new MissingParameter(this, token.CurrentToken.WholeSegment),
                                         Optional.Option.None<Cursor>()
                                     ),
                                     some: parameterToken =>

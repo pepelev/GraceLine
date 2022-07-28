@@ -11,14 +11,15 @@ namespace GraceLine.Cursors
         public Item<UnrecognizedOption> Skip() => MatchShort().Map(
             option => new Item<UnrecognizedOption>(
                 new UnrecognizedOption(
-                    option.Content[0].ToString()
+                    option.Content[0].ToString(),
+                    option.Segment(1)
                 ),
-                option.Skip(1)
+                option.Feed(1)
             )
         ).Else(
             () => MatchWholeToken().Map(
                 token => new Item<UnrecognizedOption>(
-                    new UnrecognizedOption(token.CurrentToken.Value.Content),
+                    new UnrecognizedOption(token.CurrentToken.Value.Content, token.CurrentToken.WholeSegment),
                     token.Next.Upcast()
                 )
             )

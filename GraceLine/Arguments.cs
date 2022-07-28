@@ -35,12 +35,12 @@ namespace GraceLine
                     yield return terminator.ValueOrFailure().Value;
 
                     var restArguments = new OptionSequence<TokenStart>(
-                        terminator.ValueOrFailure().Next.Map(token => (TokenStart)token),
+                        terminator.ValueOrFailure().Next.Map(static token => (TokenStart)token),
                         token => token.Next
                     );
                     foreach (var argument in restArguments)
                     {
-                        yield return new ParsedNonOptionArgument(argument.CurrentToken.Value.Content);
+                        yield return new ParsedNonOptionArgument(argument.CurrentToken);
                     }
 
                     yield break;
@@ -50,7 +50,7 @@ namespace GraceLine
                     token => token.CurrentToken.Value.Type is TokenType.Hyphen or TokenType.Plain
                 ).Map(
                     token => new Cursor.Item<ParsedArgument>(
-                        new ParsedNonOptionArgument(token.CurrentToken.Value.Content),
+                        new ParsedNonOptionArgument(token.CurrentToken),
                         token.Next.Upcast()
                     )
                 );

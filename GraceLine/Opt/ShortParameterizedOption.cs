@@ -16,30 +16,32 @@ namespace GraceLine.Opt
         public override Option<Cursor.Item<ParsedArgument>> Match(Cursor cursor)
         {
             return cursor.MatchShort()
-                .Filter(option => option.Content[0] == key)
-                .Map(option =>
+                .Filter(this, static (@this, option) => option.Content[0] == @this.key)
+                .Map(
+                    this,
+                    static (@this, option) =>
                     {
                         if (option.Content.Length > 1)
                         {
                             return new Cursor.Item<ParsedArgument>(
                                 new ParsedParametrizedOption(
-                                    this,
+                                    @this,
                                     new string(option.Content[1..])
                                 ),
-                                option.Skip(option.Content.Length) // todo skip all token
+                                option.FeedToNextToken().Upcast()
                             );
                         }
 
-                        return option.Skip(1).FlatMap(
-                            token => token.MatchWholeToken()
+                        return option.FeedToNextToken().FlatMap(
+                            static token => token.MatchWholeToken()
                         ).Match(
                             none: () => new Cursor.Item<ParsedArgument>(
-                                new MissingParameter(this),
+                                new MissingParameter(@this, option.Segment(1)),
                                 Optional.Option.None<Cursor>()
                             ),
                             some: token => new Cursor.Item<ParsedArgument>(
                                 new ParsedParametrizedOption(
-                                    this,
+                                    @this,
                                     token.CurrentToken.Value.Content
                                 ),
                                 token.Next.Upcast()
