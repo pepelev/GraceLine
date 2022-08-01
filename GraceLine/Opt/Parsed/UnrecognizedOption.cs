@@ -4,14 +4,12 @@ namespace GraceLine.Opt.Parsed
 {
     public sealed class UnrecognizedOption : ParsedArgument
     {
-        public UnrecognizedOption(string content, Source.Segment segment)
+        public UnrecognizedOption(Located<string> content)
         {
             Content = content;
-            Segment = segment;
         }
 
-        public string Content { get; }
-        public Source.Segment Segment { get; }
+        public Located<string> Content { get; }
         public override T Accept<T>(Visitor<T> visitor) => visitor.Visit(this);
     }
 }

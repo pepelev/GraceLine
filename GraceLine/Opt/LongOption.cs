@@ -33,9 +33,11 @@ namespace GraceLine.Opt
                         {
                             return new Cursor.Item<ParsedArgument>(
                                 new ParsedLongOption(
-                                    @this,
-                                    LongOptionMatch.Full,
-                                    currentToken
+                                    new Located<Option>.WholeToken(
+                                        @this,
+                                        currentToken
+                                    ),
+                                    LongOptionMatch.Full
                                 ),
                                 token.Next.Upcast()
                             ).Some();
@@ -45,9 +47,11 @@ namespace GraceLine.Opt
                         {
                             return new Cursor.Item<ParsedArgument>(
                                 new ParsedLongOption(
-                                    @this,
-                                    LongOptionMatch.Prefix,
-                                    currentToken
+                                    new Located<Option>.WholeToken(
+                                        @this,
+                                        currentToken
+                                    ),
+                                    LongOptionMatch.Prefix
                                 ),
                                 token.Next.Upcast()
                             ).Some();

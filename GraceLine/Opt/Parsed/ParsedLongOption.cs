@@ -4,16 +4,14 @@ namespace GraceLine.Opt.Parsed
 {
     public sealed class ParsedLongOption : ParsedArgument
     {
-        public ParsedLongOption(Option option, LongOptionMatch match, Token token)
+        public ParsedLongOption(Located<Option> option, LongOptionMatch match)
         {
             Option = option;
             Match = match;
-            Token = token;
         }
 
-        public Option Option { get; }
+        public Located<Option> Option { get; }
         public LongOptionMatch Match { get; }
-        public Token Token { get; }
         public override T Accept<T>(Visitor<T> visitor) => visitor.Visit(this);
     }
 }

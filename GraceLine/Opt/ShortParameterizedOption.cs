@@ -1,5 +1,6 @@
 ﻿using GraceLine.Cursors;
 using GraceLine.Opt.Parsed;
+using GraceLine.Text;
 using Optional;
 
 namespace GraceLine.Opt
@@ -19,24 +20,30 @@ namespace GraceLine.Opt
                 .Filter(this, static (@this, option) => option.Content[0] == @this.key)
                 .Map(
                     this,
-                    static (@this, option) =>
+                    static (@this, cursor) =>
                     {
-                        if (option.Content.Length > 1)
+                        if (cursor.Content.Length > 1)
                         {
                             return new Cursor.Item<ParsedArgument>(
                                 new ParsedParametrizedOption(
                                     @this,
-                                    new string(option.Content[1..])
+                                    new string(cursor.Content[1..])
                                 ),
-                                option.FeedToNextToken().Upcast()
+                                cursor.FeedToNextToken().Upcast()
                             );
                         }
 
-                        return option.FeedToNextToken().FlatMap(
+                        return cursor.FeedToNextToken().FlatMap(
                             static token => token.MatchWholeToken()
                         ).Match(
                             none: () => new Cursor.Item<ParsedArgument>(
-                                new MissingParameter(@this, option.Segment(1)),
+                                new MissingParameter(
+                                    new Located<Option>.Plain(
+                                        @this,
+                                        cursor.CurrentToken,
+                                        cursor.Segment(1)
+                                    )
+                                ),
                                 Optional.Option.None<Cursor>()
                             ),
                             some: token => new Cursor.Item<ParsedArgument>(

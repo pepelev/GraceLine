@@ -1,5 +1,6 @@
 ﻿using GraceLine.Cursors;
 using GraceLine.Opt.Parsed;
+using GraceLine.Text;
 using Optional;
 
 namespace GraceLine.Opt
@@ -20,7 +21,13 @@ namespace GraceLine.Opt
             .Map(
                 this,
                 static (@this, cursor) => new Cursor.Item<ParsedArgument>(
-                    new ParsedShortOption(@this, cursor.Segment(1)),
+                    new ParsedShortOption(
+                        new Located<Option>.Plain(
+                            @this,
+                            cursor.CurrentToken,
+                            cursor.Segment(1)
+                        )
+                    ),
                     cursor.Feed(1)
                 )
             );

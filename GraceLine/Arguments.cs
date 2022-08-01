@@ -106,7 +106,7 @@ namespace GraceLine
                     }
 
                     yield return new LongOptionAmbiguity(
-                        list.Select(item => item.Value.Option).ToList()
+                        list.Select(item => item.Value.Option.Value).ToList()
                     );
 
                     cursor = list.OrderBy(item => item.Next.Map(c => (long)c.Offset).Or(long.MaxValue)).First().Next;
@@ -121,13 +121,13 @@ namespace GraceLine
         {
             public override Option Visit(ParsedNonOptionArgument argument) => throw new NotSupportedException();
             public override Option Visit(ParsedShortOption argument) => throw new NotSupportedException();
-            public override Option Visit(ParsedLongOption argument) => argument.Option;
+            public override Option Visit(ParsedLongOption argument) => argument.Option.Value;
             public override Option Visit(ParsedNumber argument) => throw new NotSupportedException();
             public override Option Visit(ParsedParametrizedOption argument) => argument.Option;
             public override Option Visit(OptionTerminator argument) => throw new NotSupportedException();
             public override Option Visit(UnrecognizedOption argument) => throw new NotSupportedException();
             public override Option Visit(LongOptionAmbiguity argument) => throw new NotSupportedException();
-            public override Option Visit(MissingParameter argument) => argument.Option;
+            public override Option Visit(MissingParameter argument) => argument.Option.Value;
         }
 
         private sealed class OnlyLongOption : ParsedArgument.Visitor<Option<ParsedLongOption>>

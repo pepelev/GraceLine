@@ -21,9 +21,10 @@ namespace GraceLine.Opt
             return cursor.MatchWholeToken()
                 .Filter(token => token.CurrentToken.Value.Type == TokenType.DoubleHyphenPrefixed)
                 .FlatMap(
-                    token =>
+                    this,
+                    static (@this, token) =>
                     {
-                        var keySpan = key.AsSpan();
+                        var keySpan = @this.key.AsSpan();
                         var argumentSpan = token.CurrentToken.Value.Content.AsSpan(LongOptionPrefix);
                         var delimiterIndex = argumentSpan.IndexOf('=');
                         if (delimiterIndex == -1)
@@ -32,14 +33,19 @@ namespace GraceLine.Opt
                             {
                                 return token.Next.Match(
                                     none: () => new Cursor.Item<ParsedArgument>(
-                                        new MissingParameter(this, token.CurrentToken.WholeSegment),
+                                        new MissingParameter(
+                                            new Located<Option>.WholeToken(
+                                                @this,
+                                                token.CurrentToken
+                                            )
+                                        ),
                                         Optional.Option.None<Cursor>()
                                     ),
                                     some: parameterToken =>
                                     {
                                         var parameter = parameterToken.CurrentToken.Value.Content;
                                         return new Cursor.Item<ParsedArgument>(
-                                            new ParsedParametrizedOption(this, parameter),
+                                            new ParsedParametrizedOption(@this, parameter),
                                             parameterToken.Next.Upcast()
                                         );
                                     }
@@ -53,7 +59,7 @@ namespace GraceLine.Opt
                         {
                             return new Cursor.Item<ParsedArgument>(
                                 new ParsedParametrizedOption(
-                                    this,
+                                    @this,
                                     new string(argumentSpan[(delimiterIndex + 1)..])
                                 ),
                                 token.Next.Upcast()

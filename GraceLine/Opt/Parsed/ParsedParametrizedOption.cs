@@ -10,7 +10,6 @@
 
         public Option Option { get; }
         public string Argument { get; }
-
         public override T Accept<T>(Visitor<T> visitor) => visitor.Visit(this);
     }
 }

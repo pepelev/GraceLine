@@ -1,4 +1,5 @@
 ﻿using GraceLine.Opt.Parsed;
+using GraceLine.Text;
 using Optional;
 using Optional.Unsafe;
 
@@ -9,17 +10,25 @@ namespace GraceLine.Cursors
         public abstract int Offset { get; }
 
         public Item<UnrecognizedOption> Skip() => MatchShort().Map(
-            option => new Item<UnrecognizedOption>(
+            cursor => new Item<UnrecognizedOption>(
                 new UnrecognizedOption(
-                    option.Content[0].ToString(),
-                    option.Segment(1)
+                    new Located<string>.Plain(
+                        cursor.Content[0].ToString(),
+                        cursor.CurrentToken,
+                        cursor.Segment(1)
+                    )
                 ),
-                option.Feed(1)
+                cursor.Feed(1)
             )
         ).Else(
             () => MatchWholeToken().Map(
                 token => new Item<UnrecognizedOption>(
-                    new UnrecognizedOption(token.CurrentToken.Value.Content, token.CurrentToken.WholeSegment),
+                    new UnrecognizedOption(
+                        new Located<string>.WholeToken(
+                            token.CurrentToken.Value.Content,
+                            token.CurrentToken
+                        )
+                    ),
                     token.Next.Upcast()
                 )
             )
