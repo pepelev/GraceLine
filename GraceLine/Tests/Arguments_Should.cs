@@ -196,7 +196,7 @@ namespace GraceLine.Tests
         [Test]
         public void Parse_Long_Parametrized_Option()
         {
-            var level = new LongParametrizedOption("level");
+            var level = new LongOption.WithParameter("level");
             var arguments = new Arguments(level);
 
             var parsedArguments = arguments.Parse("--level=info");
@@ -206,7 +206,7 @@ namespace GraceLine.Tests
         [Test]
         public void Parse_Long_Parametrized_Option_By_Prefix()
         {
-            var level = new LongParametrizedOption("level");
+            var level = new LongOption.WithParameter("level");
             var arguments = new Arguments(level);
 
             var parsedArguments = arguments.Parse("--l=error");
@@ -216,7 +216,7 @@ namespace GraceLine.Tests
         [Test]
         public void Parse_Long_Parametrized_Option_By_Prefix_With_Short_Value()
         {
-            var level = new LongParametrizedOption("level");
+            var level = new LongOption.WithParameter("level");
             var arguments = new Arguments(level);
 
             var parsedArguments = arguments.Parse("--l=1");
@@ -232,7 +232,7 @@ namespace GraceLine.Tests
             // ReSharper restore StringLiteralTypo
         {
             var all = new ShortOption('a');
-            var level = new LongParametrizedOption("level");
+            var level = new LongOption.WithParameter("level");
             var arguments = new Arguments(level, all);
 
             var parsedArguments = arguments.Parse(key, value);
@@ -242,7 +242,7 @@ namespace GraceLine.Tests
         [Test]
         public void Parse_Long_Parametrized_Option_With_Missing_Parameter()
         {
-            var level = new LongParametrizedOption("level");
+            var level = new LongOption.WithParameter("level");
             var arguments = new Arguments(level);
 
             var parsedArguments = arguments.Parse("--level");
@@ -253,8 +253,8 @@ namespace GraceLine.Tests
         public void Parse_Ambiguous_Long_Parametrized_Options()
         {
             var all = new ShortOption('a');
-            var beep = new LongParametrizedOption("beep");
-            var binary = new LongParametrizedOption("binary");
+            var beep = new LongOption.WithParameter("beep");
+            var binary = new LongOption.WithParameter("binary");
             var arguments = new Arguments(all, beep, binary);
 
             var parsedArguments = arguments.Parse("-a", "--b=true");
@@ -264,7 +264,7 @@ namespace GraceLine.Tests
         [Test]
         public void Parse_Long_Option_With_Optional_Parameter()
         {
-            var beep = new LongOptionallyParametrizedOption("beep");
+            var beep = new LongOption.WithOptionalParameter("beep");
             var arguments = new Arguments(beep);
 
             var parsedArguments = arguments.Parse("--beep=loud");
@@ -274,7 +274,7 @@ namespace GraceLine.Tests
         [Test]
         public void Parse_Long_Option_With_Optional_Parameter_By_Prefix()
         {
-            var beep = new LongOptionallyParametrizedOption("beep");
+            var beep = new LongOption.WithOptionalParameter("beep");
             var arguments = new Arguments(beep);
 
             var parsedArguments = arguments.Parse("--b=loud");
@@ -284,7 +284,7 @@ namespace GraceLine.Tests
         [Test]
         public void Parse_Long_Option_With_Empty_Optional_Parameter()
         {
-            var beep = new LongOptionallyParametrizedOption("beep");
+            var beep = new LongOption.WithOptionalParameter("beep");
             var arguments = new Arguments(beep);
 
             var parsedArguments = arguments.Parse("--beep=");
@@ -294,7 +294,7 @@ namespace GraceLine.Tests
         [Test]
         public void Parse_Long_Option_Without_Optional_Parameter()
         {
-            var beep = new LongOptionallyParametrizedOption("beep");
+            var beep = new LongOption.WithOptionalParameter("beep");
             var arguments = new Arguments(beep);
 
             var parsedArguments = arguments.Parse("--beep");
@@ -304,7 +304,7 @@ namespace GraceLine.Tests
         [Test]
         public void Parse_Long_Option_Without_Optional_Parameter2()
         {
-            var beep = new LongOptionallyParametrizedOption("beep");
+            var beep = new LongOption.WithOptionalParameter("beep");
             var arguments = new Arguments(beep);
 
             var parsedArguments = arguments.Parse("--beep", "argument");
@@ -314,7 +314,7 @@ namespace GraceLine.Tests
         [Test]
         public void Parse_Long_Option_Mimic()
         {
-            var beep = new LongOptionallyParametrizedOption("beep");
+            var beep = new LongOption.WithOptionalParameter("beep");
             var arguments = new Arguments(beep);
 
             var parsedArguments = arguments.Parse("--=", "argument");

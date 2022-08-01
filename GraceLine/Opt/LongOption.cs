@@ -6,9 +6,10 @@ using Optional;
 
 namespace GraceLine.Opt
 {
-    public sealed class LongOption : Option
+    public sealed partial class LongOption : Option
     {
         private readonly string key;
+        private const int LongOptionPrefixLength = 2;
 
         public LongOption(string key)
         {
@@ -19,8 +20,6 @@ namespace GraceLine.Opt
 
         public override Option<Cursor.Item<ParsedArgument>> Match(Cursor cursor)
         {
-            // todo introduce general place for such constants
-            const int LongOptionPrefix = 2;
             return cursor.MatchWholeToken()
                 .Filter(static token => token.CurrentToken.Value.Type == TokenType.DoubleHyphenPrefixed)
                 .FlatMap(
@@ -29,7 +28,7 @@ namespace GraceLine.Opt
                     {
                         var currentToken = token.CurrentToken;
                         var value = currentToken.Value.Content;
-                        if (@this.key.AsSpan().SequenceEqual(value.AsSpan(LongOptionPrefix)))
+                        if (@this.key.AsSpan().SequenceEqual(value.AsSpan(LongOptionPrefixLength)))
                         {
                             return new Cursor.Item<ParsedArgument>(
                                 new ParsedLongOption(
@@ -43,7 +42,7 @@ namespace GraceLine.Opt
                             ).Some();
                         }
 
-                        if (@this.key.AsSpan().StartsWith(value.AsSpan(LongOptionPrefix)))
+                        if (@this.key.AsSpan().StartsWith(value.AsSpan(LongOptionPrefixLength)))
                         {
                             return new Cursor.Item<ParsedArgument>(
                                 new ParsedLongOption(
