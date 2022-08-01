@@ -8,8 +8,9 @@ namespace GraceLine.Opt
 {
     public sealed partial class LongOption : Option
     {
-        private readonly string key;
         private const int LongOptionPrefixLength = 2;
+
+        private readonly string key;
 
         public LongOption(string key)
         {
