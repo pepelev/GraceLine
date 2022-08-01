@@ -364,7 +364,7 @@ namespace GraceLine.Tests
         public void Parse_Short_Parametrized_Option_In_Single_Token()
         {
             var help = new LongOption("help");
-            var count = new ShortParameterizedOption('c');
+            var count = new ShortOption.WithParameter('c');
             var arguments = new Arguments(count, help);
 
             var parsedArguments = arguments.Parse("-c100");
@@ -376,7 +376,7 @@ namespace GraceLine.Tests
         public void Parse_Short_Parametrized_Option_In_Single_Composite_Token()
         {
             var help = new LongOption("help");
-            var count = new ShortParameterizedOption('c');
+            var count = new ShortOption.WithParameter('c');
             var all = new ShortOption('a');
             var arguments = new Arguments(all, count, help);
 
@@ -389,7 +389,7 @@ namespace GraceLine.Tests
         public void Parse_Short_Parametrized_Option_In_Two_Tokens()
         {
             var help = new LongOption("help");
-            var count = new ShortParameterizedOption('c');
+            var count = new ShortOption.WithParameter('c');
             var arguments = new Arguments(count, help);
 
             var parsedArguments = arguments.Parse("-c", "100");
@@ -402,7 +402,7 @@ namespace GraceLine.Tests
         {
             var all = new ShortOption('a');
             var help = new LongOption("help");
-            var count = new ShortParameterizedOption('c');
+            var count = new ShortOption.WithParameter('c');
             var arguments = new Arguments(count, help, all);
 
             var parsedArguments = arguments.Parse("-ac");

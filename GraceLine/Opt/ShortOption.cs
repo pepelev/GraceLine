@@ -5,7 +5,7 @@ using Optional;
 
 namespace GraceLine.Opt
 {
-    public sealed class ShortOption : Option
+    public sealed partial class ShortOption : Option
     {
         private readonly char key;
 
