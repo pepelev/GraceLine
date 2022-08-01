@@ -28,9 +28,17 @@ namespace GraceLine.Opt
                             if (cursor.Content.Length > 1)
                             {
                                 return new Cursor.Item<ParsedArgument>(
-                                    new ParsedParametrizedOption(
-                                        @this,
-                                        new string(cursor.Content[1..])
+                                    new ParsedLongOption.WithParameter(
+                                        new Located<Option>.Plain(
+                                            @this,
+                                            cursor.CurrentToken,
+                                            cursor.Segment(1)
+                                        ),
+                                        new Located<string>.Plain(
+                                            new string(cursor.Content[1..]),
+                                            cursor.CurrentToken,
+                                            cursor.FeedPart(1).SegmentToEnd
+                                        )
                                     ),
                                     cursor.FeedToNextToken().Upcast()
                                 );
@@ -50,9 +58,16 @@ namespace GraceLine.Opt
                                     Optional.Option.None<Cursor>()
                                 ),
                                 some: token => new Cursor.Item<ParsedArgument>(
-                                    new ParsedParametrizedOption(
-                                        @this,
-                                        token.CurrentToken.Value.Content
+                                    new ParsedLongOption.WithParameter(
+                                        new Located<Option>.Plain(
+                                            @this,
+                                            cursor.CurrentToken,
+                                            cursor.SegmentToEnd
+                                        ),
+                                        new Located<string>.WholeToken(
+                                            token.CurrentToken.Value.Content,
+                                            token.CurrentToken
+                                        )
                                     ),
                                     token.Next.Upcast()
                                 )

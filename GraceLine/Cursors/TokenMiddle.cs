@@ -24,10 +24,35 @@ namespace GraceLine.Cursors
             ? CurrentToken.Segment(..(index + chars))
             : CurrentToken.Segment(index..(index + chars));
 
+        public Source.Segment SegmentToEnd => AtTokenStart
+            ? CurrentToken.WholeSegment
+            : Segment(Content.Length);
+
         public override Option<TokenStart> MatchWholeToken() => Option.None<TokenStart>();
         public override Option<TokenMiddle> MatchShort() => this.Some();
 
         public Option<TokenStart> FeedToNextToken() => start.Next;
+
+        public TokenMiddle FeedPart(int chars)
+        {
+            if (chars == 0)
+            {
+                return this;
+            }
+
+            if (chars < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(chars), "must not be negative");
+            }
+
+            var newIndex = index + chars;
+            if (newIndex < CurrentToken.Value.Content.Length)
+            {
+                return new TokenMiddle(newIndex, start);
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(chars), "must be less than chars left in current token");
+        }
 
         public Option<Cursor> Feed(int chars)
         {

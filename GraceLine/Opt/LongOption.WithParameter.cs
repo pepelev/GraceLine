@@ -44,14 +44,19 @@ namespace GraceLine.Opt
                                             ),
                                             Optional.Option.None<Cursor>()
                                         ),
-                                        some: parameterToken =>
-                                        {
-                                            var parameter = parameterToken.CurrentToken.Value.Content;
-                                            return new Cursor.Item<ParsedArgument>(
-                                                new ParsedParametrizedOption(@this, parameter),
-                                                parameterToken.Next.Upcast()
-                                            );
-                                        }
+                                        some: parameterToken => new Cursor.Item<ParsedArgument>(
+                                            new ParsedLongOption.WithParameter(
+                                                new Located<Option>.WholeToken(
+                                                    @this,
+                                                    token.CurrentToken
+                                                ),
+                                                new Located<string>.WholeToken(
+                                                    parameterToken.CurrentToken.Value.Content,
+                                                    parameterToken.CurrentToken
+                                                )
+                                            ),
+                                            parameterToken.Next.Upcast()
+                                        )
                                     ).Some();
                                 }
 
@@ -61,9 +66,17 @@ namespace GraceLine.Opt
                             if (keySpan.StartsWith(argumentSpan[..delimiterIndex]))
                             {
                                 return new Cursor.Item<ParsedArgument>(
-                                    new ParsedParametrizedOption(
-                                        @this,
-                                        new string(argumentSpan[(delimiterIndex + 1)..])
+                                    new ParsedLongOption.WithParameter(
+                                        new Located<Option>.Plain(
+                                            @this,
+                                            token.CurrentToken,
+                                            token.CurrentToken.Segment(..delimiterIndex)
+                                        ),
+                                        new Located<string>.Plain(
+                                            new string(argumentSpan[(delimiterIndex + 1)..]),
+                                            token.CurrentToken,
+                                            token.CurrentToken.Segment((delimiterIndex + 1)..)
+                                        )
                                     ),
                                     token.Next.Upcast()
                                 ).Some();

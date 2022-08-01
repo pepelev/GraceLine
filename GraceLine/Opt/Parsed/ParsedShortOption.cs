@@ -2,7 +2,7 @@
 
 namespace GraceLine.Opt.Parsed
 {
-    public sealed class ParsedShortOption : ParsedArgument
+    public sealed partial class ParsedShortOption : ParsedArgument
     {
         public ParsedShortOption(Located<Option> option)
         {

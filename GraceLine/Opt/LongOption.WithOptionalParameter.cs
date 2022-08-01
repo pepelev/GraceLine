@@ -33,9 +33,12 @@ namespace GraceLine.Opt
                             if (delimiterIndex < 0)
                             {
                                 return new Cursor.Item<ParsedArgument>(
-                                    new ParsedParametrizedOption(
-                                        @this,
-                                        null
+                                    new ParsedLongOption.WithOptionalParameter(
+                                        new Located<Option>.WholeToken(
+                                            @this,
+                                            token.CurrentToken
+                                        ),
+                                        Optional.Option.None<Located<string>>()
                                     ),
                                     token.Next.Upcast()
                                 ).Some();
@@ -46,11 +49,23 @@ namespace GraceLine.Opt
                                 return Optional.Option.None<Cursor.Item<ParsedArgument>>();
                             }
 
-                            if (keySpan.StartsWith(argumentSpan[..delimiterIndex]))
+                            var keyRange = ..delimiterIndex;
+                            var valueRange = (delimiterIndex + 1)..;
+                            if (keySpan.StartsWith(argumentSpan[keyRange]))
                             {
-                                var value = argumentSpan[(delimiterIndex + 1)..];
                                 return new Cursor.Item<ParsedArgument>(
-                                    new ParsedParametrizedOption(@this, new string(value)),
+                                    new ParsedLongOption.WithOptionalParameter(
+                                        new Located<Option>.Plain(
+                                            @this,
+                                            token.CurrentToken,
+                                            token.CurrentToken.Segment(..delimiterIndex)
+                                        ),
+                                        new Located<string>.Plain(
+                                            new string(argumentSpan[valueRange]),
+                                            token.CurrentToken,
+                                            token.CurrentToken.Segment(valueRange)
+                                        ).Some<Located<string>>()
+                                    ),
                                     token.Next.Upcast()
                                 ).Some();
                             }

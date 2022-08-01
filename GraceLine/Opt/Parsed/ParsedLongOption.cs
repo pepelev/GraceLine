@@ -1,8 +1,9 @@
 ﻿using GraceLine.Text;
+using Optional;
 
 namespace GraceLine.Opt.Parsed
 {
-    public sealed class ParsedLongOption : ParsedArgument
+    public sealed partial class ParsedLongOption : ParsedArgument
     {
         public ParsedLongOption(Located<Option> option, LongOptionMatch match)
         {

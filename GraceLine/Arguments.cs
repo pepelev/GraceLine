@@ -121,9 +121,11 @@ namespace GraceLine
         {
             public override Option Visit(ParsedNonOptionArgument argument) => throw new NotSupportedException();
             public override Option Visit(ParsedShortOption argument) => throw new NotSupportedException();
+            public override Option Visit(ParsedShortOption.WithParameter argument) => throw new NotImplementedException();
             public override Option Visit(ParsedLongOption argument) => argument.Option.Value;
+            public override Option Visit(ParsedLongOption.WithParameter argument) => throw new NotImplementedException();
+            public override Option Visit(ParsedLongOption.WithOptionalParameter argument) => throw new NotImplementedException();
             public override Option Visit(ParsedNumber argument) => throw new NotSupportedException();
-            public override Option Visit(ParsedParametrizedOption argument) => argument.Option;
             public override Option Visit(OptionTerminator argument) => throw new NotSupportedException();
             public override Option Visit(UnrecognizedOption argument) => throw new NotSupportedException();
             public override Option Visit(LongOptionAmbiguity argument) => throw new NotSupportedException();
@@ -136,9 +138,11 @@ namespace GraceLine
 
             public override Option<ParsedLongOption> Visit(ParsedNonOptionArgument argument) => Optional.Option.None<ParsedLongOption>();
             public override Option<ParsedLongOption> Visit(ParsedShortOption argument) => Optional.Option.None<ParsedLongOption>();
+            public override Option<ParsedLongOption> Visit(ParsedShortOption.WithParameter argument) => throw new NotImplementedException();
             public override Option<ParsedLongOption> Visit(ParsedLongOption argument) => argument.Some();
+            public override Option<ParsedLongOption> Visit(ParsedLongOption.WithParameter argument) => throw new NotImplementedException();
+            public override Option<ParsedLongOption> Visit(ParsedLongOption.WithOptionalParameter argument) => throw new NotImplementedException();
             public override Option<ParsedLongOption> Visit(ParsedNumber argument) => Optional.Option.None<ParsedLongOption>();
-            public override Option<ParsedLongOption> Visit(ParsedParametrizedOption argument) => Optional.Option.None<ParsedLongOption>();
             public override Option<ParsedLongOption> Visit(OptionTerminator argument) => Optional.Option.None<ParsedLongOption>();
             public override Option<ParsedLongOption> Visit(UnrecognizedOption argument) => Optional.Option.None<ParsedLongOption>();
             public override Option<ParsedLongOption> Visit(LongOptionAmbiguity argument) => Optional.Option.None<ParsedLongOption>();
