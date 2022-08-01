@@ -9,7 +9,7 @@ namespace GraceLine.Opt.Parsed
             Option = option;
         }
 
-        public Located<Option> Option { get; }
+        public override Located<Option> Option { get; }
         public override T Accept<T>(Visitor<T> visitor) => visitor.Visit(this);
     }
 }

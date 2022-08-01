@@ -15,7 +15,7 @@ namespace GraceLine.Opt.Parsed
                 Argument = argument;
             }
 
-            public Located<Option> Option { get; }
+            public override Located<Option> Option { get; }
             public Option<Located<string>> Argument { get; }
             public override T Accept<T>(Visitor<T> visitor) => visitor.Visit(this);
         }

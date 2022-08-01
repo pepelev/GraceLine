@@ -4,16 +4,14 @@ namespace GraceLine.Opt.Parsed
 {
     public sealed class ParsedNumber : ParsedOption
     {
-        public ParsedNumber(long value, Token token, Source.Segment segment)
+        public ParsedNumber(Located<Option> option, long value)
         {
+            Option = option;
             Value = value;
-            Token = token;
-            Segment = segment;
         }
 
+        public override Located<Option> Option { get; }
         public long Value { get; }
-        public Token Token { get; }
-        public Source.Segment Segment { get; }
         public override T Accept<T>(Visitor<T> visitor) => visitor.Visit(this);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using GraceLine.Cursors;
 using GraceLine.Opt.Parsed;
+using GraceLine.Text;
 using Optional;
 
 namespace GraceLine.Opt
@@ -19,7 +20,8 @@ namespace GraceLine.Opt
             return cursor.MatchShort()
                 .Filter(static @short => @short.AtTokenStart)
                 .FlatMap(
-                    static @short =>
+                    this,
+                    static (@this, @short) =>
                     {
                         var content = @short.Content;
                         var end = 0;
@@ -32,9 +34,12 @@ namespace GraceLine.Opt
                         {
                             return new Cursor.Item<ParsedOption>(
                                 new ParsedNumber(
-                                    value,
-                                    @short.CurrentToken,
-                                    @short.CurrentToken.Segment(..end)
+                                    new Located<Option>.Plain(
+                                        @this,
+                                        @short.CurrentToken,
+                                        @short.CurrentToken.Segment(..end)
+                                    ),
+                                    value
                                 ),
                                 @short.Feed(end)
                             ).Some();

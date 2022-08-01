@@ -10,7 +10,7 @@ namespace GraceLine.Opt.Parsed
             Match = match;
         }
 
-        public Located<Option> Option { get; }
+        public override Located<Option> Option { get; }
         public LongOptionMatch Match { get; }
         public override T Accept<T>(Visitor<T> visitor) => visitor.Visit(this);
     }
