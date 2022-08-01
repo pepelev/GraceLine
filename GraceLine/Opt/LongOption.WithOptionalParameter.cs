@@ -19,7 +19,7 @@ namespace GraceLine.Opt
 
             public override string ToString() => $"--{key}[=?]";
 
-            public override Option<Cursor.Item<ParsedArgument>> Match(Cursor cursor)
+            public override Option<Cursor.Item<ParsedOption>> Match(Cursor cursor)
             {
                 return cursor.MatchWholeToken()
                     .Filter(static token => token.CurrentToken.Value.Type == TokenType.DoubleHyphenPrefixed)
@@ -32,7 +32,7 @@ namespace GraceLine.Opt
                             var delimiterIndex = argumentSpan.IndexOf('=');
                             if (delimiterIndex < 0)
                             {
-                                return new Cursor.Item<ParsedArgument>(
+                                return new Cursor.Item<ParsedOption>(
                                     new ParsedLongOption.WithOptionalParameter(
                                         new Located<Option>.WholeToken(
                                             @this,
@@ -46,14 +46,14 @@ namespace GraceLine.Opt
 
                             if (delimiterIndex == 0)
                             {
-                                return Optional.Option.None<Cursor.Item<ParsedArgument>>();
+                                return Optional.Option.None<Cursor.Item<ParsedOption>>();
                             }
 
                             var keyRange = ..delimiterIndex;
                             var valueRange = (delimiterIndex + 1)..;
                             if (keySpan.StartsWith(argumentSpan[keyRange]))
                             {
-                                return new Cursor.Item<ParsedArgument>(
+                                return new Cursor.Item<ParsedOption>(
                                     new ParsedLongOption.WithOptionalParameter(
                                         new Located<Option>.Plain(
                                             @this,
@@ -70,7 +70,7 @@ namespace GraceLine.Opt
                                 ).Some();
                             }
 
-                            return Optional.Option.None<Cursor.Item<ParsedArgument>>();
+                            return Optional.Option.None<Cursor.Item<ParsedOption>>();
                         }
                     );
             }

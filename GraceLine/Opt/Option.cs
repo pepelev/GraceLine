@@ -6,6 +6,6 @@ namespace GraceLine.Opt
 {
     public abstract class Option
     {
-        public abstract Option<Cursor.Item<ParsedArgument>> Match(Cursor cursor);
+        public abstract Option<Cursor.Item<ParsedOption>> Match(Cursor cursor);
     }
 }

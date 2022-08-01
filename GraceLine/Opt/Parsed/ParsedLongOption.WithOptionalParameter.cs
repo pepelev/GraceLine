@@ -5,7 +5,7 @@ namespace GraceLine.Opt.Parsed
 {
     public sealed partial class ParsedLongOption
     {
-        public sealed class WithOptionalParameter : ParsedArgument
+        public sealed class WithOptionalParameter : ParsedOption
         {
             public WithOptionalParameter(
                 Located<Option> option,

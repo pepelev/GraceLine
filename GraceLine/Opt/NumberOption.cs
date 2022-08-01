@@ -9,7 +9,9 @@ namespace GraceLine.Opt
     {
         public static NumberOption Singleton { get; } = new();
 
-        public override Option<Cursor.Item<ParsedArgument>> Match(Cursor cursor)
+        public override string ToString() => "-{Digits}";
+
+        public override Option<Cursor.Item<ParsedOption>> Match(Cursor cursor)
         {
             // char.IsDigit() is not used because it works not only for 0..9
             static bool IsDigit(char @char) => '0' <= @char && @char <= '9';
@@ -28,7 +30,7 @@ namespace GraceLine.Opt
 
                         if (long.TryParse(content[..end], NumberStyles.None, CultureInfo.InvariantCulture, out var value))
                         {
-                            return new Cursor.Item<ParsedArgument>(
+                            return new Cursor.Item<ParsedOption>(
                                 new ParsedNumber(
                                     value,
                                     @short.CurrentToken,
@@ -38,7 +40,7 @@ namespace GraceLine.Opt
                             ).Some();
                         }
 
-                        return Optional.Option.None<Cursor.Item<ParsedArgument>>();
+                        return Optional.Option.None<Cursor.Item<ParsedOption>>();
                     }
                 );
         }

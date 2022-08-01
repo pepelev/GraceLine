@@ -2,7 +2,7 @@
 
 namespace GraceLine.Opt.Parsed
 {
-    public sealed class MissingParameter : ParsedArgument
+    public sealed class MissingParameter : ParsedOption
     {
         public MissingParameter(Located<Option> option)
         {

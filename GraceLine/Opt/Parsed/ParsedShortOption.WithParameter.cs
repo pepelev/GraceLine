@@ -4,7 +4,7 @@ namespace GraceLine.Opt.Parsed
 {
     public sealed partial class ParsedShortOption
     {
-        public sealed class WithParameter : ParsedArgument
+        public sealed class WithParameter : ParsedOption
         {
             public WithParameter(Located<Option> option, Located<string> argument)
             {
@@ -15,7 +15,7 @@ namespace GraceLine.Opt.Parsed
             public Located<Option> Option { get; }
             public Located<string> Argument { get; }
 
-            public override T Accept<T>(Visitor<T> visitor) => visitor.Visit((WithParameter)this);
+            public override T Accept<T>(Visitor<T> visitor) => visitor.Visit(this);
         }
     }
 }

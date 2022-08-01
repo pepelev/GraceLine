@@ -19,7 +19,7 @@ namespace GraceLine.Opt
 
             public override string ToString() => $"--{key} ?";
 
-            public override Option<Cursor.Item<ParsedArgument>> Match(Cursor cursor)
+            public override Option<Cursor.Item<ParsedOption>> Match(Cursor cursor)
             {
                 return cursor.MatchWholeToken()
                     .Filter(static token => token.CurrentToken.Value.Type == TokenType.DoubleHyphenPrefixed)
@@ -35,7 +35,7 @@ namespace GraceLine.Opt
                                 if (keySpan.StartsWith(argumentSpan))
                                 {
                                     return token.Next.Match(
-                                        none: () => new Cursor.Item<ParsedArgument>(
+                                        none: () => new Cursor.Item<ParsedOption>(
                                             new MissingParameter(
                                                 new Located<Option>.WholeToken(
                                                     @this,
@@ -44,7 +44,7 @@ namespace GraceLine.Opt
                                             ),
                                             Optional.Option.None<Cursor>()
                                         ),
-                                        some: parameterToken => new Cursor.Item<ParsedArgument>(
+                                        some: parameterToken => new Cursor.Item<ParsedOption>(
                                             new ParsedLongOption.WithParameter(
                                                 new Located<Option>.WholeToken(
                                                     @this,
@@ -60,12 +60,12 @@ namespace GraceLine.Opt
                                     ).Some();
                                 }
 
-                                return Optional.Option.None<Cursor.Item<ParsedArgument>>();
+                                return Optional.Option.None<Cursor.Item<ParsedOption>>();
                             }
 
                             if (keySpan.StartsWith(argumentSpan[..delimiterIndex]))
                             {
-                                return new Cursor.Item<ParsedArgument>(
+                                return new Cursor.Item<ParsedOption>(
                                     new ParsedLongOption.WithParameter(
                                         new Located<Option>.Plain(
                                             @this,
@@ -82,7 +82,7 @@ namespace GraceLine.Opt
                                 ).Some();
                             }
 
-                            return Optional.Option.None<Cursor.Item<ParsedArgument>>();
+                            return Optional.Option.None<Cursor.Item<ParsedOption>>();
                         }
                     );
             }

@@ -2,7 +2,7 @@
 
 namespace GraceLine.Opt.Parsed
 {
-    public sealed class ParsedNumber : ParsedArgument
+    public sealed class ParsedNumber : ParsedOption
     {
         public ParsedNumber(long value, Token token, Source.Segment segment)
         {

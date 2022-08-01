@@ -16,11 +16,11 @@ namespace GraceLine.Opt
 
         public override string ToString() => $"-{key}";
 
-        public override Option<Cursor.Item<ParsedArgument>> Match(Cursor cursor) => cursor.MatchShort()
+        public override Option<Cursor.Item<ParsedOption>> Match(Cursor cursor) => cursor.MatchShort()
             .Filter(this, static (@this, cursor) => cursor.Content[0] == @this.key)
             .Map(
                 this,
-                static (@this, cursor) => new Cursor.Item<ParsedArgument>(
+                static (@this, cursor) => new Cursor.Item<ParsedOption>(
                     new ParsedShortOption(
                         new Located<Option>.Plain(
                             @this,
