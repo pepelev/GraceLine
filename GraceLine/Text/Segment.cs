@@ -79,6 +79,7 @@ namespace GraceLine.Text
             }
 
             public override Source.Segment WholeSegment { get; }
+            public override string ToString() => Value.ToString();
         }
 
         public IEnumerator<Token> GetEnumerator()

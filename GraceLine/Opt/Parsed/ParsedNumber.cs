@@ -1,4 +1,5 @@
-﻿using GraceLine.Text;
+﻿using System.Globalization;
+using GraceLine.Text;
 
 namespace GraceLine.Opt.Parsed
 {
@@ -13,5 +14,7 @@ namespace GraceLine.Opt.Parsed
         public override Located<Option> Option { get; }
         public long Value { get; }
         public override T Accept<T>(Visitor<T> visitor) => visitor.Visit(this);
+        public override T Accept<T>(ParsedArgument.Visitor<T> visitor) => visitor.Visit(this);
+        public override string ToString() => $"-{Value.ToString(CultureInfo.InvariantCulture)}";
     }
 }

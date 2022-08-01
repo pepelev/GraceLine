@@ -11,5 +11,6 @@ namespace GraceLine.Opt.Parsed
 
         public Token Token { get; }
         public override T Accept<T>(Visitor<T> visitor) => visitor.Visit(this);
+        public override string ToString() => Token.ToString();
     }
 }

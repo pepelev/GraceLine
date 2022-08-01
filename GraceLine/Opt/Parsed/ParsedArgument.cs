@@ -16,7 +16,7 @@
             public abstract T Visit(OptionTerminator argument);
             public abstract T Visit(UnrecognizedOption argument);
             public abstract T Visit(LongOptionAmbiguity argument);
-            public abstract T Visit(MissingParameter argument);
+            public abstract T Visit(MissingArgument argument);
         }
     }
 }

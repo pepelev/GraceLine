@@ -11,5 +11,6 @@ namespace GraceLine.Opt.Parsed
 
         public Located<string> Content { get; }
         public override T Accept<T>(Visitor<T> visitor) => visitor.Visit(this);
+        public override string ToString() => Content.Value;
     }
 }

@@ -83,6 +83,40 @@ namespace GraceLine
                     continue;
                 }
 
+                var types = items.Select(item => item.Value.Accept(OptionType.Singleton)).ToHashSet();
+                var longTypes = new[]
+                {
+                    Type.ParsedLongOption,
+                    Type.ParsedLongOptionWithParameter,
+                    Type.ParsedLongOptionWithOptionalParameter,
+                    Type.MissingArgument
+                };
+                if (types.IsSubsetOf(longTypes))
+                {
+                    // long option logic
+                }
+
+                var shortTypes = new[]
+                {
+                    Type.ParsedShortOption,
+                    Type.ParsedShortOptionWithParameter,
+                    Type.MissingArgument,
+                    Type.ParsedNumber
+                };
+                if (types.IsSubsetOf(shortTypes))
+                {
+                    // short option logic
+                }
+
+                throw new ArgumentException("Incompatible options passed. See Data.Types and Data.Options for details")
+                {
+                    Data =
+                    {
+                        { "Types", types },
+                        { "Options", items.Select(item => item.Value) }
+                    }
+                };
+
                 var list = items
                     .Select(
                         item => item.Value.Accept(OnlyLongOption.Singleton).Map(
@@ -117,36 +151,41 @@ namespace GraceLine
             }
         }
 
-        private sealed class Visitor : ParsedArgument.Visitor<Option>
+        private enum Type : byte
         {
-            public override Option Visit(ParsedNonOptionArgument argument) => throw new NotSupportedException();
-            public override Option Visit(ParsedShortOption argument) => throw new NotSupportedException();
-            public override Option Visit(ParsedShortOption.WithParameter argument) => throw new NotImplementedException();
-            public override Option Visit(ParsedLongOption argument) => argument.Option.Value;
-            public override Option Visit(ParsedLongOption.WithParameter argument) => throw new NotImplementedException();
-            public override Option Visit(ParsedLongOption.WithOptionalParameter argument) => throw new NotImplementedException();
-            public override Option Visit(ParsedNumber argument) => throw new NotSupportedException();
-            public override Option Visit(OptionTerminator argument) => throw new NotSupportedException();
-            public override Option Visit(UnrecognizedOption argument) => throw new NotSupportedException();
-            public override Option Visit(LongOptionAmbiguity argument) => throw new NotSupportedException();
-            public override Option Visit(MissingParameter argument) => argument.Option.Value;
+            ParsedShortOption,
+            ParsedShortOptionWithParameter,
+            ParsedLongOption,
+            ParsedLongOptionWithParameter,
+            ParsedLongOptionWithOptionalParameter,
+            ParsedNumber,
+            MissingArgument
         }
 
-        private sealed class OnlyLongOption : ParsedArgument.Visitor<Option<ParsedLongOption>>
+        private sealed class OnlyLongOption : ParsedOption.Visitor<Option<ParsedLongOption>>
         {
             public static OnlyLongOption Singleton { get; } = new();
 
-            public override Option<ParsedLongOption> Visit(ParsedNonOptionArgument argument) => Optional.Option.None<ParsedLongOption>();
             public override Option<ParsedLongOption> Visit(ParsedShortOption argument) => Optional.Option.None<ParsedLongOption>();
             public override Option<ParsedLongOption> Visit(ParsedShortOption.WithParameter argument) => throw new NotImplementedException();
             public override Option<ParsedLongOption> Visit(ParsedLongOption argument) => argument.Some();
             public override Option<ParsedLongOption> Visit(ParsedLongOption.WithParameter argument) => throw new NotImplementedException();
             public override Option<ParsedLongOption> Visit(ParsedLongOption.WithOptionalParameter argument) => throw new NotImplementedException();
             public override Option<ParsedLongOption> Visit(ParsedNumber argument) => Optional.Option.None<ParsedLongOption>();
-            public override Option<ParsedLongOption> Visit(OptionTerminator argument) => Optional.Option.None<ParsedLongOption>();
-            public override Option<ParsedLongOption> Visit(UnrecognizedOption argument) => Optional.Option.None<ParsedLongOption>();
-            public override Option<ParsedLongOption> Visit(LongOptionAmbiguity argument) => Optional.Option.None<ParsedLongOption>();
-            public override Option<ParsedLongOption> Visit(MissingParameter argument) => Optional.Option.None<ParsedLongOption>();
+            public override Option<ParsedLongOption> Visit(MissingArgument argument) => Optional.Option.None<ParsedLongOption>();
+        }
+
+        private sealed class OptionType : ParsedOption.Visitor<Type>
+        {
+            public static OptionType Singleton { get; } = new();
+
+            public override Type Visit(ParsedShortOption argument) => Type.ParsedShortOption;
+            public override Type Visit(ParsedShortOption.WithParameter argument) => Type.ParsedShortOptionWithParameter;
+            public override Type Visit(ParsedLongOption argument) => Type.ParsedLongOption;
+            public override Type Visit(ParsedLongOption.WithParameter argument) => Type.ParsedLongOptionWithParameter;
+            public override Type Visit(ParsedLongOption.WithOptionalParameter argument) => Type.ParsedLongOptionWithOptionalParameter;
+            public override Type Visit(ParsedNumber argument) => Type.ParsedNumber;
+            public override Type Visit(MissingArgument argument) => Type.MissingArgument;
         }
     }
 }

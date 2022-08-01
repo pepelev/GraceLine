@@ -48,7 +48,7 @@ namespace GraceLine.Opt
                                 static token => token.MatchWholeToken()
                             ).Match(
                                 none: () => new Cursor.Item<ParsedOption>(
-                                    new MissingParameter(
+                                    new MissingArgument(
                                         new Located<Option>.Plain(
                                             @this,
                                             cursor.CurrentToken,

@@ -486,7 +486,7 @@ namespace GraceLine.Tests
             public override object Visit(OptionTerminator argument) => Terminator.Singleton;
             public override object Visit(UnrecognizedOption argument) => Unrecognized(argument.Content.Value);
             public override object Visit(LongOptionAmbiguity argument) => argument.Options.ToArray();
-            public override object Visit(MissingParameter argument) => (argument.Option.Value, "MISSING");
+            public override object Visit(MissingArgument argument) => (argument.Option.Value, "MISSING");
         }
     }
 }
