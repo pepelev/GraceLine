@@ -272,6 +272,16 @@ namespace GraceLine.Tests
         }
 
         [Test]
+        public void Not_Match_Long_Option_With_Optional_Parameter()
+        {
+            var beep = new LongOption.WithOptionalParameter("beep");
+            var arguments = new Arguments(beep);
+
+            var parsedArguments = arguments.Parse("--call");
+            Assert(parsedArguments, Unrecognized("--call"));
+        }
+
+        [Test]
         public void Parse_Long_Option_With_Optional_Parameter_By_Prefix()
         {
             var beep = new LongOption.WithOptionalParameter("beep");

@@ -27,21 +27,25 @@ namespace GraceLine.Opt
                         this,
                         static (@this, token) =>
                         {
-                            var keySpan = @this.key.AsSpan();
                             var argumentSpan = token.CurrentToken.Value.Content.AsSpan(LongOptionPrefixLength);
                             var delimiterIndex = argumentSpan.IndexOf('=');
                             if (delimiterIndex < 0)
                             {
-                                return new Cursor.Item<ParsedOption>(
-                                    new ParsedLongOption.WithOptionalParameter(
-                                        new Located<Option>.WholeToken(
-                                            @this,
-                                            token.CurrentToken
+                                if (argumentSpan.TryMatch(@this.key) is { })
+                                {
+                                    return new Cursor.Item<ParsedOption>(
+                                        new ParsedLongOption.WithOptionalParameter(
+                                            new Located<Option>.WholeToken(
+                                                @this,
+                                                token.CurrentToken
+                                            ),
+                                            Optional.Option.None<Located<string>>()
                                         ),
-                                        Optional.Option.None<Located<string>>()
-                                    ),
-                                    token.Next.Upcast()
-                                ).Some();
+                                        token.Next.Upcast()
+                                    ).Some();
+                                }
+
+                                return Optional.Option.None<Cursor.Item<ParsedOption>>();
                             }
 
                             if (delimiterIndex == 0)
@@ -51,7 +55,7 @@ namespace GraceLine.Opt
 
                             var keyRange = ..delimiterIndex;
                             var valueRange = (delimiterIndex + 1)..;
-                            if (argumentSpan[keyRange].TryMatch(keySpan) is { })
+                            if (argumentSpan[keyRange].TryMatch(@this.key) is { })
                             {
                                 return new Cursor.Item<ParsedOption>(
                                     new ParsedLongOption.WithOptionalParameter(
