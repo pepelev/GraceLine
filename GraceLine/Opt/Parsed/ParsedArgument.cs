@@ -7,14 +7,15 @@
         public abstract class Visitor<T>
         {
             public abstract T Visit(ParsedNonOptionArgument argument);
-            public abstract T Visit(ParsedShortOption argument);
-            public abstract T Visit(ParsedShortOption.WithParameter argument);
-            public abstract T Visit(ParsedLongOption argument);
-            public abstract T Visit(ParsedLongOption.WithParameter argument);
-            public abstract T Visit(ParsedLongOption.WithOptionalParameter argument);
-            public abstract T Visit(ParsedNumber argument);
+            public abstract T Visit(ParsedShortOption option);
+            public abstract T Visit(ParsedShortOption.WithParameter option);
+            public abstract T Visit(ParsedLongOption option);
+            public abstract T Visit(ParsedLongOption.WithParameter option);
+            public abstract T Visit(ParsedLongOption.WithOptionalParameter option);
+            public abstract T Visit(ParsedLongOption.WithMissingArgument option);
+            public abstract T Visit(ParsedNumber option);
             public abstract T Visit(OptionTerminator argument);
-            public abstract T Visit(UnrecognizedOption argument);
+            public abstract T Visit(UnrecognizedOption option);
             public abstract T Visit(LongOptionAmbiguity argument);
             public abstract T Visit(MissingArgument argument);
         }

@@ -5,7 +5,8 @@ using Optional.Unsafe;
 
 namespace GraceLine
 {
-    internal static class Extensions
+
+    internal static class OptionExtensions
     {
         public static Option<Cursor> Upcast(this Option<TokenStart> token) => token.Map(start => (Cursor)start);
 

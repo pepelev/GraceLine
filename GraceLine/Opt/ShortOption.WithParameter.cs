@@ -28,7 +28,7 @@ namespace GraceLine.Opt
                             if (cursor.Content.Length > 1)
                             {
                                 return new Cursor.Item<ParsedOption>(
-                                    new ParsedLongOption.WithParameter(
+                                    new ParsedShortOption.WithParameter(
                                         new Located<Option>.Plain(
                                             @this,
                                             cursor.CurrentToken,
@@ -58,7 +58,7 @@ namespace GraceLine.Opt
                                     Optional.Option.None<Cursor>()
                                 ),
                                 some: token => new Cursor.Item<ParsedOption>(
-                                    new ParsedLongOption.WithParameter(
+                                    new ParsedShortOption.WithParameter(
                                         new Located<Option>.Plain(
                                             @this,
                                             cursor.CurrentToken,

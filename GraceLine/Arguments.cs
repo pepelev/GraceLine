@@ -83,109 +83,65 @@ namespace GraceLine
                     continue;
                 }
 
-                var types = items.Select(item => item.Value.Accept(OptionType.Singleton)).ToHashSet();
-                var longTypes = new[]
+                if (items.All(item => item.Value.Accept(IsLongOption.Singleton)))
                 {
-                    Type.ParsedLongOption,
-                    Type.ParsedLongOptionWithParameter,
-                    Type.ParsedLongOptionWithOptionalParameter,
-                    Type.MissingArgument
-                };
-                if (types.IsSubsetOf(longTypes))
-                {
-                    // long option logic
-                }
-
-                var shortTypes = new[]
-                {
-                    Type.ParsedShortOption,
-                    Type.ParsedShortOptionWithParameter,
-                    Type.MissingArgument,
-                    Type.ParsedNumber
-                };
-                if (types.IsSubsetOf(shortTypes))
-                {
-                    // short option logic
-                }
-
-                throw new ArgumentException("Incompatible options passed. See Data.Types and Data.Options for details")
-                {
-                    Data =
+                    var fullMatches = items
+                        .Where(item => item.Value.Accept(GetLongOptionMatch.Singleton) == LongOptionMatch.Full)
+                        .ToList();
+                    if (fullMatches.Count == 0)
                     {
-                        { "Types", types },
-                        { "Options", items.Select(item => item.Value) }
-                    }
-                };
+                        yield return new LongOptionAmbiguity(
+                            items.Select(item => item.Value.Option.Value).ToList()
+                        );
 
-                var list = items
-                    .Select(
-                        item => item.Value.Accept(OnlyLongOption.Singleton).Map(
-                            option => new Cursor.Item<ParsedLongOption>(
-                                option,
-                                item.Next
-                            )
-                        )
-                    )
-                    .Values()
-                    .ToList();
-
-                if (list.Count == items.Count)
-                {
-                    if (list.Count(item => item.Value.Match == LongOptionMatch.Full) == 1)
-                    {
-                        var item = list.Single(item => item.Value.Match == LongOptionMatch.Full);
-                        yield return item.Value;
-                        cursor = item.Next;
+                        cursor = items.OrderBy(item => item.Next.Map(c => (long)c.Offset).Or(long.MaxValue)).First().Next;
                         continue;
                     }
 
-                    yield return new LongOptionAmbiguity(
-                        list.Select(item => item.Value.Option.Value).ToList()
-                    );
-
-                    cursor = list.OrderBy(item => item.Next.Map(c => (long)c.Offset).Or(long.MaxValue)).First().Next;
-                    continue;
+                    if (fullMatches.Count == 1)
+                    {
+                        yield return fullMatches[0].Value;
+                        cursor = fullMatches[0].Next;
+                        continue;
+                    }
                 }
 
-                throw new NotSupportedException();
+                throw new ArgumentException("Ambiguous options passed. See Data.Options for details")
+                {
+                    Data =
+                    {
+                        { "Options", items.Select(item => item.Value) }
+                    }
+                };
             }
         }
 
-        private enum Type : byte
+        private sealed class IsLongOption : ParsedOption.Visitor<bool>
         {
-            ParsedShortOption,
-            ParsedShortOptionWithParameter,
-            ParsedLongOption,
-            ParsedLongOptionWithParameter,
-            ParsedLongOptionWithOptionalParameter,
-            ParsedNumber,
-            MissingArgument
+            public static IsLongOption Singleton { get; } = new();
+
+            public override bool Visit(ParsedShortOption argument) => false;
+            public override bool Visit(ParsedShortOption.WithParameter argument) => false;
+            public override bool Visit(ParsedLongOption argument) => true;
+            public override bool Visit(ParsedLongOption.WithParameter argument) => true;
+            public override bool Visit(ParsedLongOption.WithOptionalParameter argument) => true;
+            public override bool Visit(ParsedLongOption.WithMissingArgument option) => true;
+            public override bool Visit(ParsedNumber argument) => false;
+            public override bool Visit(MissingArgument argument) => false;
         }
 
-        private sealed class OnlyLongOption : ParsedOption.Visitor<Option<ParsedLongOption>>
+        private sealed class GetLongOptionMatch : ParsedOption.Visitor<LongOptionMatch>
         {
-            public static OnlyLongOption Singleton { get; } = new();
+            public static GetLongOptionMatch Singleton { get; } = new();
 
-            public override Option<ParsedLongOption> Visit(ParsedShortOption argument) => Optional.Option.None<ParsedLongOption>();
-            public override Option<ParsedLongOption> Visit(ParsedShortOption.WithParameter argument) => throw new NotImplementedException();
-            public override Option<ParsedLongOption> Visit(ParsedLongOption argument) => argument.Some();
-            public override Option<ParsedLongOption> Visit(ParsedLongOption.WithParameter argument) => throw new NotImplementedException();
-            public override Option<ParsedLongOption> Visit(ParsedLongOption.WithOptionalParameter argument) => throw new NotImplementedException();
-            public override Option<ParsedLongOption> Visit(ParsedNumber argument) => Optional.Option.None<ParsedLongOption>();
-            public override Option<ParsedLongOption> Visit(MissingArgument argument) => Optional.Option.None<ParsedLongOption>();
-        }
-
-        private sealed class OptionType : ParsedOption.Visitor<Type>
-        {
-            public static OptionType Singleton { get; } = new();
-
-            public override Type Visit(ParsedShortOption argument) => Type.ParsedShortOption;
-            public override Type Visit(ParsedShortOption.WithParameter argument) => Type.ParsedShortOptionWithParameter;
-            public override Type Visit(ParsedLongOption argument) => Type.ParsedLongOption;
-            public override Type Visit(ParsedLongOption.WithParameter argument) => Type.ParsedLongOptionWithParameter;
-            public override Type Visit(ParsedLongOption.WithOptionalParameter argument) => Type.ParsedLongOptionWithOptionalParameter;
-            public override Type Visit(ParsedNumber argument) => Type.ParsedNumber;
-            public override Type Visit(MissingArgument argument) => Type.MissingArgument;
+            public override LongOptionMatch Visit(ParsedShortOption argument) => throw new InvalidOperationException();
+            public override LongOptionMatch Visit(ParsedShortOption.WithParameter argument) => throw new InvalidOperationException();
+            public override LongOptionMatch Visit(ParsedLongOption argument) => argument.Match;
+            public override LongOptionMatch Visit(ParsedLongOption.WithParameter argument) => argument.Match;
+            public override LongOptionMatch Visit(ParsedLongOption.WithOptionalParameter argument) => LongOptionMatch.Full;
+            public override LongOptionMatch Visit(ParsedLongOption.WithMissingArgument option) => option.Match;
+            public override LongOptionMatch Visit(ParsedNumber argument) => throw new InvalidOperationException();
+            public override LongOptionMatch Visit(MissingArgument argument) => throw new InvalidOperationException();
         }
     }
 }

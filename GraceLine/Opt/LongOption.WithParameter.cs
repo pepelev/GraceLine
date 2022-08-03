@@ -34,13 +34,18 @@ namespace GraceLine.Opt
                             {
                                 if (keySpan.StartsWith(argumentSpan))
                                 {
+                                    var match = keySpan.SequenceEqual(argumentSpan)
+                                        ? LongOptionMatch.Full
+                                        : LongOptionMatch.Prefix;
+
                                     return token.Next.Match(
                                         none: () => new Cursor.Item<ParsedOption>(
-                                            new MissingArgument(
+                                            new ParsedLongOption.WithMissingArgument(
                                                 new Located<Option>.WholeToken(
                                                     @this,
                                                     token.CurrentToken
-                                                )
+                                                ),
+                                                match
                                             ),
                                             Optional.Option.None<Cursor>()
                                         ),
@@ -50,6 +55,7 @@ namespace GraceLine.Opt
                                                     @this,
                                                     token.CurrentToken
                                                 ),
+                                                match,
                                                 new Located<string>.WholeToken(
                                                     parameterToken.CurrentToken.Value.Content,
                                                     parameterToken.CurrentToken
@@ -65,6 +71,9 @@ namespace GraceLine.Opt
 
                             if (keySpan.StartsWith(argumentSpan[..delimiterIndex]))
                             {
+                                var match = keySpan.SequenceEqual(argumentSpan[..delimiterIndex])
+                                    ? LongOptionMatch.Full
+                                    : LongOptionMatch.Prefix;
                                 return new Cursor.Item<ParsedOption>(
                                     new ParsedLongOption.WithParameter(
                                         new Located<Option>.Plain(
@@ -72,6 +81,7 @@ namespace GraceLine.Opt
                                             token.CurrentToken,
                                             token.CurrentToken.Segment(..delimiterIndex)
                                         ),
+                                        match,
                                         new Located<string>.Plain(
                                             new string(argumentSpan[(delimiterIndex + 1)..]),
                                             token.CurrentToken,

@@ -463,28 +463,33 @@ namespace GraceLine.Tests
         {
             public static AssertConversion Singleton { get; } = new();
             public override object Visit(ParsedNonOptionArgument argument) => argument.Token.Value.Content;
-            public override object Visit(ParsedShortOption argument) => argument.Option.Value;
+            public override object Visit(ParsedShortOption option) => option.Option.Value;
 
-            public override object Visit(ParsedShortOption.WithParameter argument) => (
-                argument.Option.Value,
-                argument.Argument.Value
+            public override object Visit(ParsedShortOption.WithParameter option) => (
+                option.Option.Value,
+                option.Argument.Value
             );
 
-            public override object Visit(ParsedLongOption argument) => argument.Option.Value;
+            public override object Visit(ParsedLongOption option) => option.Option.Value;
 
-            public override object Visit(ParsedLongOption.WithParameter argument) => (
-                argument.Option.Value,
-                argument.Argument.Value
+            public override object Visit(ParsedLongOption.WithParameter option) => (
+                option.Option.Value,
+                option.Argument.Value
             );
 
-            public override object Visit(ParsedLongOption.WithOptionalParameter argument) => (
-                argument.Option.Value,
-                argument.Argument.Map(located => located.Value).ValueOr("NO_PARAMETER")
+            public override object Visit(ParsedLongOption.WithOptionalParameter option) => (
+                option.Option.Value,
+                option.Argument.Map(located => located.Value).ValueOr("NO_PARAMETER")
             );
 
-            public override object Visit(ParsedNumber argument) => argument.Value;
+            public override object Visit(ParsedLongOption.WithMissingArgument option) => (
+                option.Option.Value,
+                "MISSING"
+            );
+
+            public override object Visit(ParsedNumber option) => option.Value;
             public override object Visit(OptionTerminator argument) => Terminator.Singleton;
-            public override object Visit(UnrecognizedOption argument) => Unrecognized(argument.Content.Value);
+            public override object Visit(UnrecognizedOption option) => Unrecognized(option.Content.Value);
             public override object Visit(LongOptionAmbiguity argument) => argument.Options.ToArray();
             public override object Visit(MissingArgument argument) => (argument.Option.Value, "MISSING");
         }

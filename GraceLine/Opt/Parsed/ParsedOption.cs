@@ -9,13 +9,14 @@ namespace GraceLine.Opt.Parsed
 
         public new abstract class Visitor<T>
         {
-            public abstract T Visit(ParsedShortOption argument);
-            public abstract T Visit(ParsedShortOption.WithParameter argument);
-            public abstract T Visit(ParsedLongOption argument);
-            public abstract T Visit(ParsedLongOption.WithParameter argument);
-            public abstract T Visit(ParsedLongOption.WithOptionalParameter argument);
-            public abstract T Visit(ParsedNumber argument);
-            public abstract T Visit(MissingArgument argument);
+            public abstract T Visit(ParsedShortOption option);
+            public abstract T Visit(ParsedShortOption.WithParameter option);
+            public abstract T Visit(ParsedLongOption option);
+            public abstract T Visit(ParsedLongOption.WithParameter option);
+            public abstract T Visit(ParsedLongOption.WithOptionalParameter option);
+            public abstract T Visit(ParsedLongOption.WithMissingArgument option);
+            public abstract T Visit(ParsedNumber option);
+            public abstract T Visit(MissingArgument option);
         }
     }
 }
