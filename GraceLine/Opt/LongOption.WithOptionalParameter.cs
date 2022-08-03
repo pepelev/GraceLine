@@ -51,7 +51,7 @@ namespace GraceLine.Opt
 
                             var keyRange = ..delimiterIndex;
                             var valueRange = (delimiterIndex + 1)..;
-                            if (keySpan.StartsWith(argumentSpan[keyRange]))
+                            if (argumentSpan[keyRange].TryMatch(keySpan) is { })
                             {
                                 return new Cursor.Item<ParsedOption>(
                                     new ParsedLongOption.WithOptionalParameter(

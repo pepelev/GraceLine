@@ -29,29 +29,13 @@ namespace GraceLine.Opt
                     {
                         var currentToken = token.CurrentToken;
                         var value = currentToken.Value.Content;
-                        if (@this.key.AsSpan().SequenceEqual(value.AsSpan(LongOptionPrefixLength)))
+                        var argument = value.AsSpan(LongOptionPrefixLength);
+                        if (argument.TryMatch(@this.key) is { } match)
                         {
                             return new Cursor.Item<ParsedOption>(
                                 new ParsedLongOption(
-                                    new Located<Option>.WholeToken(
-                                        @this,
-                                        currentToken
-                                    ),
-                                    LongOptionMatch.Full
-                                ),
-                                token.Next.Upcast()
-                            ).Some();
-                        }
-
-                        if (@this.key.AsSpan().StartsWith(value.AsSpan(LongOptionPrefixLength)))
-                        {
-                            return new Cursor.Item<ParsedOption>(
-                                new ParsedLongOption(
-                                    new Located<Option>.WholeToken(
-                                        @this,
-                                        currentToken
-                                    ),
-                                    LongOptionMatch.Prefix
+                                    new Located<Option>.WholeToken(@this, currentToken),
+                                    match
                                 ),
                                 token.Next.Upcast()
                             ).Some();
