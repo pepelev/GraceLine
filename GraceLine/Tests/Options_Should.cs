@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace GraceLine.Tests
 {
-    public sealed class Arguments_Should
+    public sealed class Options_Should
     {
         private sealed class Terminator
         {
@@ -17,7 +17,7 @@ namespace GraceLine.Tests
         [Test]
         public void Parse_Empty_Arguments_When_Empty()
         {
-            var arguments = new Arguments();
+            var arguments = new Options();
 
             var parsedArguments = arguments.Parse();
 
@@ -27,7 +27,7 @@ namespace GraceLine.Tests
         [Test]
         public void Parse_Empty_Arguments_When_Has_Options()
         {
-            var arguments = new Arguments(
+            var arguments = new Options(
                 new ShortOption('a'),
                 new ShortOption('b'),
                 new ShortOption('c')
@@ -44,7 +44,7 @@ namespace GraceLine.Tests
             var a = new ShortOption('a');
             var b = new ShortOption('b');
             var c = new ShortOption('c');
-            var arguments = new Arguments(a, b, c);
+            var arguments = new Options(a, b, c);
 
             var parsedArguments = arguments.Parse("-a", "-c", "-b");
 
@@ -57,7 +57,7 @@ namespace GraceLine.Tests
             var a = new ShortOption('a');
             var b = new ShortOption('b');
             var c = new ShortOption('c');
-            var arguments = new Arguments(a, b, c);
+            var arguments = new Options(a, b, c);
 
             var parsedArguments = arguments.Parse("-a", "-c", "-a");
 
@@ -70,7 +70,7 @@ namespace GraceLine.Tests
             var r = new ShortOption('r');
             var n = new ShortOption('n');
             var x = new ShortOption('x');
-            var arguments = new Arguments(r, n, x);
+            var arguments = new Options(r, n, x);
 
             // ReSharper disable StringLiteralTypo
             var parsedArguments = arguments.Parse("-xrnx");
@@ -85,7 +85,7 @@ namespace GraceLine.Tests
             var r = new ShortOption('r');
             var n = new ShortOption('n');
             var x = new ShortOption('x');
-            var arguments = new Arguments(r, n, x);
+            var arguments = new Options(r, n, x);
 
             // ReSharper disable StringLiteralTypo
             var parsedArguments = arguments.Parse("-x", "-k");
@@ -100,7 +100,7 @@ namespace GraceLine.Tests
             var r = new ShortOption('r');
             var n = new ShortOption('n');
             var x = new ShortOption('x');
-            var arguments = new Arguments(r, n, x);
+            var arguments = new Options(r, n, x);
 
             // ReSharper disable StringLiteralTypo
             var parsedArguments = arguments.Parse("-xkn");
@@ -115,7 +115,7 @@ namespace GraceLine.Tests
             var r = new ShortOption('r');
             var n = new ShortOption('n');
             var x = new ShortOption('x');
-            var arguments = new Arguments(r, n, x);
+            var arguments = new Options(r, n, x);
 
             // ReSharper disable StringLiteralTypo
             var parsedArguments = arguments.Parse("-knr");
@@ -130,7 +130,7 @@ namespace GraceLine.Tests
             var help = new LongOption("help");
             var output = new LongOption("output");
             var binary = new LongOption("binary");
-            var arguments = new Arguments(help, output, binary);
+            var arguments = new Options(help, output, binary);
 
             var parsedArguments = arguments.Parse("--binary", "--help", "--output");
 
@@ -143,7 +143,7 @@ namespace GraceLine.Tests
             var help = new LongOption("help");
             var quick = new LongOption("quick");
             var quiet = new LongOption("quiet");
-            var arguments = new Arguments(help, quick, quiet);
+            var arguments = new Options(help, quick, quiet);
 
             // ReSharper disable StringLiteralTypo
             var parsedArguments = arguments.Parse("--h", "--quie");
@@ -156,7 +156,7 @@ namespace GraceLine.Tests
         public void Parse_Unknown_Long_Options([Values("--cell", "--sells")] string argument)
         {
             var sell = new LongOption("sell");
-            var arguments = new Arguments(sell);
+            var arguments = new Options(sell);
 
             var parsedArguments = arguments.Parse(argument);
 
@@ -169,7 +169,7 @@ namespace GraceLine.Tests
             var help = new LongOption("help");
             var quick = new LongOption("quick");
             var quiet = new LongOption("quiet");
-            var arguments = new Arguments(help, quick, quiet);
+            var arguments = new Options(help, quick, quiet);
 
             // ReSharper disable StringLiteralTypo
             var parsedArguments = arguments.Parse("--help", "--qui");
@@ -184,7 +184,7 @@ namespace GraceLine.Tests
             var help = new LongOption("help");
             var quick = new LongOption("quick");
             var quickly = new LongOption("quickly");
-            var arguments = new Arguments(help, quick, quickly);
+            var arguments = new Options(help, quick, quickly);
 
             // ReSharper disable StringLiteralTypo
             var parsedArguments = arguments.Parse("--quick").ToList();
@@ -197,7 +197,7 @@ namespace GraceLine.Tests
         public void Parse_Long_Parametrized_Option()
         {
             var level = new LongOption.WithParameter("level");
-            var arguments = new Arguments(level);
+            var arguments = new Options(level);
 
             var parsedArguments = arguments.Parse("--level=info");
             Assert(parsedArguments, (level, "info"));
@@ -207,7 +207,7 @@ namespace GraceLine.Tests
         public void Parse_Long_Parametrized_Option_By_Prefix()
         {
             var level = new LongOption.WithParameter("level");
-            var arguments = new Arguments(level);
+            var arguments = new Options(level);
 
             var parsedArguments = arguments.Parse("--l=error");
             Assert(parsedArguments, (level, "error"));
@@ -217,7 +217,7 @@ namespace GraceLine.Tests
         public void Parse_Long_Parametrized_Option_By_Prefix_With_Short_Value()
         {
             var level = new LongOption.WithParameter("level");
-            var arguments = new Arguments(level);
+            var arguments = new Options(level);
 
             var parsedArguments = arguments.Parse("--l=1");
             Assert(parsedArguments, (level, "1"));
@@ -233,7 +233,7 @@ namespace GraceLine.Tests
         {
             var all = new ShortOption('a');
             var level = new LongOption.WithParameter("level");
-            var arguments = new Arguments(level, all);
+            var arguments = new Options(level, all);
 
             var parsedArguments = arguments.Parse(key, value);
             Assert(parsedArguments, (level, value));
@@ -243,7 +243,7 @@ namespace GraceLine.Tests
         public void Parse_Long_Parametrized_Option_With_Missing_Parameter()
         {
             var level = new LongOption.WithParameter("level");
-            var arguments = new Arguments(level);
+            var arguments = new Options(level);
 
             var parsedArguments = arguments.Parse("--level");
             Assert(parsedArguments, (level, "MISSING"));
@@ -255,7 +255,7 @@ namespace GraceLine.Tests
             var all = new ShortOption('a');
             var beep = new LongOption.WithParameter("beep");
             var binary = new LongOption.WithParameter("binary");
-            var arguments = new Arguments(all, beep, binary);
+            var arguments = new Options(all, beep, binary);
 
             var parsedArguments = arguments.Parse("-a", "--b=true");
             Assert(parsedArguments, all, Ambiguity(beep, binary));
@@ -265,7 +265,7 @@ namespace GraceLine.Tests
         public void Parse_Long_Option_With_Optional_Parameter()
         {
             var beep = new LongOption.WithOptionalParameter("beep");
-            var arguments = new Arguments(beep);
+            var arguments = new Options(beep);
 
             var parsedArguments = arguments.Parse("--beep=loud");
             Assert(parsedArguments, (beep, "loud"));
@@ -275,7 +275,7 @@ namespace GraceLine.Tests
         public void Not_Match_Long_Option_With_Optional_Parameter()
         {
             var beep = new LongOption.WithOptionalParameter("beep");
-            var arguments = new Arguments(beep);
+            var arguments = new Options(beep);
 
             var parsedArguments = arguments.Parse("--call");
             Assert(parsedArguments, Unrecognized("--call"));
@@ -285,7 +285,7 @@ namespace GraceLine.Tests
         public void Parse_Long_Option_With_Optional_Parameter_By_Prefix()
         {
             var beep = new LongOption.WithOptionalParameter("beep");
-            var arguments = new Arguments(beep);
+            var arguments = new Options(beep);
 
             var parsedArguments = arguments.Parse("--b=loud");
             Assert(parsedArguments, (beep, "loud"));
@@ -295,7 +295,7 @@ namespace GraceLine.Tests
         public void Parse_Long_Option_With_Empty_Optional_Parameter()
         {
             var beep = new LongOption.WithOptionalParameter("beep");
-            var arguments = new Arguments(beep);
+            var arguments = new Options(beep);
 
             var parsedArguments = arguments.Parse("--beep=");
             Assert(parsedArguments, (beep, ""));
@@ -305,7 +305,7 @@ namespace GraceLine.Tests
         public void Parse_Long_Option_Without_Optional_Parameter()
         {
             var beep = new LongOption.WithOptionalParameter("beep");
-            var arguments = new Arguments(beep);
+            var arguments = new Options(beep);
 
             var parsedArguments = arguments.Parse("--beep");
             Assert(parsedArguments, (beep, "NO_PARAMETER"));
@@ -315,7 +315,7 @@ namespace GraceLine.Tests
         public void Parse_Long_Option_Without_Optional_Parameter2()
         {
             var beep = new LongOption.WithOptionalParameter("beep");
-            var arguments = new Arguments(beep);
+            var arguments = new Options(beep);
 
             var parsedArguments = arguments.Parse("--beep", "argument");
             Assert(parsedArguments, (beep, "NO_PARAMETER"), "argument");
@@ -325,7 +325,7 @@ namespace GraceLine.Tests
         public void Parse_Long_Option_Mimic()
         {
             var beep = new LongOption.WithOptionalParameter("beep");
-            var arguments = new Arguments(beep);
+            var arguments = new Options(beep);
 
             var parsedArguments = arguments.Parse("--=", "argument");
             Assert(parsedArguments, Unrecognized("--="), "argument");
@@ -337,7 +337,7 @@ namespace GraceLine.Tests
             var a = new ShortOption('a');
             var b = new ShortOption('b');
             var c = new ShortOption('c');
-            var arguments = new Arguments(a, b, c);
+            var arguments = new Options(a, b, c);
 
             var parsedArguments = arguments.Parse(argument);
 
@@ -349,7 +349,7 @@ namespace GraceLine.Tests
         {
             var a = new ShortOption('a');
             var b = new ShortOption('b');
-            var arguments = new Arguments(a, b);
+            var arguments = new Options(a, b);
 
             var parsedArguments = arguments.Parse("-a", "filename.txt", "-b");
 
@@ -363,7 +363,7 @@ namespace GraceLine.Tests
             var b = new ShortOption('b');
             var help = new LongOption("help");
             var count = NumberOption.Singleton;
-            var arguments = new Arguments(a, b, help, count);
+            var arguments = new Options(a, b, help, count);
 
             var parsedArguments = arguments.Parse("-a", "--", "filename.txt", "-b", "--help", "-5");
 
@@ -375,7 +375,7 @@ namespace GraceLine.Tests
         {
             var help = new LongOption("help");
             var count = new ShortOption.WithParameter('c');
-            var arguments = new Arguments(count, help);
+            var arguments = new Options(count, help);
 
             var parsedArguments = arguments.Parse("-c100");
 
@@ -388,7 +388,7 @@ namespace GraceLine.Tests
             var help = new LongOption("help");
             var count = new ShortOption.WithParameter('c');
             var all = new ShortOption('a');
-            var arguments = new Arguments(all, count, help);
+            var arguments = new Options(all, count, help);
 
             var parsedArguments = arguments.Parse("-ac100");
 
@@ -400,7 +400,7 @@ namespace GraceLine.Tests
         {
             var help = new LongOption("help");
             var count = new ShortOption.WithParameter('c');
-            var arguments = new Arguments(count, help);
+            var arguments = new Options(count, help);
 
             var parsedArguments = arguments.Parse("-c", "100");
 
@@ -413,7 +413,7 @@ namespace GraceLine.Tests
             var all = new ShortOption('a');
             var help = new LongOption("help");
             var count = new ShortOption.WithParameter('c');
-            var arguments = new Arguments(count, help, all);
+            var arguments = new Options(count, help, all);
 
             var parsedArguments = arguments.Parse("-ac");
 
@@ -425,7 +425,7 @@ namespace GraceLine.Tests
         {
             var help = new LongOption("help");
             var count = NumberOption.Singleton;
-            var arguments = new Arguments(count, help);
+            var arguments = new Options(count, help);
 
             var parsedArguments = arguments.Parse("--help", "-42");
 
@@ -438,7 +438,7 @@ namespace GraceLine.Tests
             var help = new LongOption("help");
             var count = NumberOption.Singleton;
             var quiet = new ShortOption('q');
-            var arguments = new Arguments(count, help, quiet);
+            var arguments = new Options(count, help, quiet);
 
             var parsedArguments = arguments.Parse("--help", "-42q");
 
@@ -451,7 +451,7 @@ namespace GraceLine.Tests
             var help = new LongOption("help");
             var count = NumberOption.Singleton;
             var quiet = new ShortOption('q');
-            var arguments = new Arguments(count, help, quiet);
+            var arguments = new Options(count, help, quiet);
 
             var parsedArguments = arguments.Parse("--help", "-q50");
 

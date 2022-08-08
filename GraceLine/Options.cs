@@ -12,11 +12,11 @@ using Option = GraceLine.Opt.Option;
 
 namespace GraceLine
 {
-    public sealed class Arguments
+    public sealed class Options
     {
         private readonly Option[] options;
 
-        public Arguments(params Option[] options)
+        public Options(params Option[] options)
         {
             this.options = options;
         }
