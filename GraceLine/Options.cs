@@ -138,7 +138,7 @@ namespace GraceLine
             public override LongOptionMatch Visit(ParsedShortOption.WithParameter argument) => throw new InvalidOperationException();
             public override LongOptionMatch Visit(ParsedLongOption argument) => argument.Match;
             public override LongOptionMatch Visit(ParsedLongOption.WithParameter argument) => argument.Match;
-            public override LongOptionMatch Visit(ParsedLongOption.WithOptionalParameter argument) => LongOptionMatch.Full;
+            public override LongOptionMatch Visit(ParsedLongOption.WithOptionalParameter argument) => argument.Match;
             public override LongOptionMatch Visit(ParsedLongOption.WithMissingArgument option) => option.Match;
             public override LongOptionMatch Visit(ParsedNumber argument) => throw new InvalidOperationException();
             public override LongOptionMatch Visit(MissingArgument argument) => throw new InvalidOperationException();

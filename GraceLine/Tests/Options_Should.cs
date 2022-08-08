@@ -163,7 +163,7 @@ namespace GraceLine.Tests
             Assert(parsedArguments, Unrecognized(argument));
         }
 
-        [Test] // todo ambiguous options with parameter and mixed (parameter and without parameter)
+        [Test]
         public void Parse_Ambiguous_Prefix_Of_Long_Options()
         {
             var help = new LongOption("help");
@@ -176,6 +176,51 @@ namespace GraceLine.Tests
             // ReSharper restore StringLiteralTypo
 
             Assert(parsedArguments, help, Ambiguity(quick, quiet));
+        }
+
+        [Test]
+        public void Parse_Ambiguous_Prefix_Of_Long_Options_With_Different_Types()
+        {
+            var quick = new LongOption("quick");
+            var quiet = new LongOption.WithParameter("quiet");
+            var quiff = new LongOption.WithOptionalParameter("quiff");
+            var arguments = new Options(quick, quiet, quiff);
+
+            // ReSharper disable StringLiteralTypo
+            var parsedArguments = arguments.Parse("--qui");
+            // ReSharper restore StringLiteralTypo
+
+            Assert(parsedArguments, new object[] { Ambiguity<Option>(quick, quiet, quiff) });
+        }
+
+        [Test]
+        public void Parse_Ambiguous_Prefix_Of_Long_Options_With_Parameter_In_One_Token()
+        {
+            var quick = new LongOption("quick");
+            var quiet = new LongOption.WithParameter("quiet");
+            var quiff = new LongOption.WithOptionalParameter("quiff");
+            var arguments = new Options(quick, quiet, quiff);
+
+            // ReSharper disable StringLiteralTypo
+            var parsedArguments = arguments.Parse("--qui=value");
+            // ReSharper restore StringLiteralTypo
+
+            Assert(parsedArguments, new object[] { Ambiguity<Option>(quiet, quiff) });
+        }
+
+        [Test]
+        public void Parse_Ambiguous_Prefix_Of_Long_Options_With_Parameter_In_Two_Tokens()
+        {
+            var quick = new LongOption("quick");
+            var quiet = new LongOption.WithParameter("quiet");
+            var quiff = new LongOption.WithOptionalParameter("quiff");
+            var arguments = new Options(quick, quiet, quiff);
+
+            // ReSharper disable StringLiteralTypo
+            var parsedArguments = arguments.Parse("--qui", "value");
+            // ReSharper restore StringLiteralTypo
+
+            Assert(parsedArguments, Ambiguity<Option>(quick, quiet, quiff), "value");
         }
 
         [Test]
@@ -460,10 +505,10 @@ namespace GraceLine.Tests
 
         private static void Assert(IEnumerable<ParsedArgument> arguments, params object[] expected)
         {
-            CollectionAssert.AreEqual(
-                expected,
-                arguments.Select(argument => argument.Accept(AssertConversion.Singleton))
-            );
+            var actual = arguments
+                .Select(argument => argument.Accept(AssertConversion.Singleton))
+                .ToList();
+            CollectionAssert.AreEqual(expected, actual);
         }
 
         private static T[] Ambiguity<T>(params T[] options) => options;

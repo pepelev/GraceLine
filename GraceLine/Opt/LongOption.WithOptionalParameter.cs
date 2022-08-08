@@ -31,7 +31,7 @@ namespace GraceLine.Opt
                             var delimiterIndex = argumentSpan.IndexOf('=');
                             if (delimiterIndex < 0)
                             {
-                                if (argumentSpan.TryMatch(@this.key) is { })
+                                if (argumentSpan.TryMatch(@this.key) is { } match)
                                 {
                                     return new Cursor.Item<ParsedOption>(
                                         new ParsedLongOption.WithOptionalParameter(
@@ -39,6 +39,7 @@ namespace GraceLine.Opt
                                                 @this,
                                                 token.CurrentToken
                                             ),
+                                            match,
                                             Optional.Option.None<Located<string>>()
                                         ),
                                         token.Next.Upcast()
@@ -52,26 +53,28 @@ namespace GraceLine.Opt
                             {
                                 return Optional.Option.None<Cursor.Item<ParsedOption>>();
                             }
-
-                            var keyRange = ..delimiterIndex;
-                            var valueRange = (delimiterIndex + 1)..;
-                            if (argumentSpan[keyRange].TryMatch(@this.key) is { })
                             {
-                                return new Cursor.Item<ParsedOption>(
-                                    new ParsedLongOption.WithOptionalParameter(
-                                        new Located<Option>.Plain(
-                                            @this,
-                                            token.CurrentToken,
-                                            token.CurrentToken.Segment(..delimiterIndex)
+                                var keyRange = ..delimiterIndex;
+                                var valueRange = (delimiterIndex + 1)..;
+                                if (argumentSpan[keyRange].TryMatch(@this.key) is { } match)
+                                {
+                                    return new Cursor.Item<ParsedOption>(
+                                        new ParsedLongOption.WithOptionalParameter(
+                                            new Located<Option>.Plain(
+                                                @this,
+                                                token.CurrentToken,
+                                                token.CurrentToken.Segment(..delimiterIndex)
+                                            ),
+                                            match,
+                                            new Located<string>.Plain(
+                                                new string(argumentSpan[valueRange]),
+                                                token.CurrentToken,
+                                                token.CurrentToken.Segment(valueRange)
+                                            ).Some<Located<string>>()
                                         ),
-                                        new Located<string>.Plain(
-                                            new string(argumentSpan[valueRange]),
-                                            token.CurrentToken,
-                                            token.CurrentToken.Segment(valueRange)
-                                        ).Some<Located<string>>()
-                                    ),
-                                    token.Next.Upcast()
-                                ).Some();
+                                        token.Next.Upcast()
+                                    ).Some();
+                                }
                             }
 
                             return Optional.Option.None<Cursor.Item<ParsedOption>>();
